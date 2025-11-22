@@ -2,6 +2,14 @@ import Foundation
 
 /// Content filtering rules and prompts for ensuring appropriate content
 enum ContentFilterPrompts {
+    /// Content types for validation
+    enum ContentType: String {
+        case slideContent = "slide content"
+        case imagePrompt = "image prompt"
+        case documentText = "document text"
+        case presentationTitle = "presentation title"
+    }
+    
     /// System message for content filtering
     static let systemMessage = """
     You are a content moderator specializing in Catholic educational materials. \
@@ -177,13 +185,5 @@ enum ContentFilterPrompts {
             "references": ["relevant Catechism paragraphs or scripture"]
         }
         """
-    }
-    
-    enum ContentType: String {
-        case slideTitle = "slide title"
-        case slideContent = "slide content"
-        case imageDescription = "image description"
-        case keyPoint = "key teaching point"
-        case speakerNotes = "speaker notes"
     }
 }

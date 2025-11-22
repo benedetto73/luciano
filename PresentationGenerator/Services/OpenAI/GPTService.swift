@@ -32,8 +32,8 @@ actor GPTService {
     ///   - audience: Target audience (kids or adults)
     /// - Returns: Structured analysis result with key points
     func analyzeContent(content: String, audience: Audience) async throws -> ContentAnalysisResult {
-        let systemPrompt = ContentAnalysisPrompts.systemPrompt(for: audience)
-        let userPrompt = ContentAnalysisPrompts.userPrompt(documentContent: content)
+        let systemPrompt = ContentAnalysisPrompts.systemMessage
+        let userPrompt = ContentAnalysisPrompts.analysisPrompt(text: content, audience: audience)
         
         let request = ChatCompletionRequest(
             model: APIConstants.defaultModel,
@@ -67,9 +67,10 @@ actor GPTService {
         slideNumber: Int,
         totalSlides: Int
     ) async throws -> SlideContentResult {
-        let systemPrompt = SlideGenerationPrompts.systemPrompt(for: audience)
-        let userPrompt = SlideGenerationPrompts.userPrompt(
+        let systemPrompt = SlideGenerationPrompts.systemMessage
+        let userPrompt = SlideGenerationPrompts.generateSlidePrompt(
             keyPoint: keyPoint,
+            audience: audience,
             slideNumber: slideNumber,
             totalSlides: totalSlides
         )
@@ -99,8 +100,12 @@ actor GPTService {
     ///   - audience: Target audience
     /// - Returns: Validation result with approval status and suggestions
     func validateContent(content: String, audience: Audience) async throws -> ContentValidationResult {
-        let systemPrompt = ContentFilterPrompts.systemPrompt(for: audience)
-        let userPrompt = ContentFilterPrompts.userPrompt(content: content)
+        let systemPrompt = ContentFilterPrompts.systemMessage
+        let userPrompt = ContentFilterPrompts.validateContentPrompt(
+            content: content,
+            contentType: .slideContent,
+            audience: audience
+        )
         
         let request = ChatCompletionRequest(
             model: APIConstants.defaultModel,
@@ -167,8 +172,7 @@ actor GPTService {
     private func handleHTTPError(statusCode: Int, data: Data) -> OpenAIError {
         // Try to parse error from response
         if let errorDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let error = errorDict["error"] as? [String: Any],
-           let message = error["message"] as? String {
+           let _ = errorDict["error"] as? [String: Any] {
             
             switch statusCode {
             case 401:
@@ -252,7 +256,7 @@ actor GPTService {
         }
         
         if errorDescription.contains("content policy") || errorDescription.contains("filtered") {
-            return .contentFiltered
+            return .contentFiltered("Content policy violation")
         }
         
         return .unknownError(error.localizedDescription)

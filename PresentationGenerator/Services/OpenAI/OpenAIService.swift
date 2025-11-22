@@ -3,13 +3,13 @@ import Foundation
 /// Main service coordinating OpenAI API interactions
 /// Combines GPT and DALL-E services with content filtering
 @MainActor
-class OpenAIService: ObservableObject {
+class OpenAIService: OpenAIServiceProtocol, ObservableObject {
     private let gptService: GPTService
     private let dalleService: DALLEService
     private let contentFilter: ContentFilter
     
     @Published var isProcessing = false
-    @Published var lastError: OpenAIError?
+    @Published var lastError: Error?
     
     // MARK: - Initialization
     
@@ -30,26 +30,31 @@ class OpenAIService: ObservableObject {
     
     /// Analyzes document content and extracts teaching points
     /// - Parameters:
-    ///   - text: Document content to analyze
-    ///   - audience: Target audience
+    ///   - content: Document content to analyze
+    ///   - preferredAudience: Optional preferred audience (if nil, AI will suggest)
     /// - Returns: Analysis result with key points and suggested slide count
-    func analyzeContent(text: String, audience: Audience) async throws -> ContentAnalysisResult {
+    func analyzeContent(
+        _ content: String,
+        preferredAudience: Audience?
+    ) async throws -> ContentAnalysisResult {
         isProcessing = true
         defer { isProcessing = false }
+        
+        let audience = preferredAudience ?? .adults // Default to adults if not specified
         
         Logger.shared.info("Analyzing content for \(audience.rawValue) audience", category: .api)
         
         do {
             // First validate the content is appropriate
-            let validation = try await contentFilter.validateContent(text, audience: audience)
+            let validation = try await contentFilter.validateContent(content, audience: audience)
             
             if !validation.isApproved {
                 Logger.shared.warning("Content validation failed: \(validation.concerns.joined(separator: ", "))", category: .api)
-                throw OpenAIError.contentFiltered
+                throw OpenAIError.contentFiltered("Content validation failed")
             }
             
             // Analyze the content
-            let result = try await gptService.analyzeContent(content: text, audience: audience)
+            let result = try await gptService.analyzeContent(content: content, audience: audience)
             
             Logger.shared.info("Analysis complete: \(result.keyPoints.count) key points, \(result.suggestedSlideCount) suggested slides", category: .api)
             
@@ -68,34 +73,39 @@ class OpenAIService: ObservableObject {
     
     // MARK: - Slide Generation
     
-    /// Generates complete slide content (text + image)
+    /// Generates content for a single slide
     /// - Parameters:
-    ///   - keyPoint: Teaching point to create slide for
-    ///   - audience: Target audience
     ///   - slideNumber: Current slide number
     ///   - totalSlides: Total slides in presentation
-    /// - Returns: Complete slide data
+    ///   - mainTheme: Overall theme of the presentation
+    ///   - keyPoint: Specific teaching point for this slide
+    ///   - audience: Target audience
+    /// - Returns: Generated slide content
     func generateSlideContent(
-        keyPoint: KeyPoint,
-        audience: Audience,
         slideNumber: Int,
-        totalSlides: Int
-    ) async throws -> GeneratedSlide {
+        totalSlides: Int,
+        mainTheme: String,
+        keyPoint: String,
+        audience: Audience
+    ) async throws -> SlideContentResult {
         isProcessing = true
         defer { isProcessing = false }
         
         Logger.shared.info("Generating slide \(slideNumber)/\(totalSlides)", category: .api)
         
         do {
+            // Create KeyPoint model for GPTService
+            let keyPointModel = KeyPoint(content: keyPoint, order: slideNumber)
+            
             // Generate text content
             let slideContent = try await gptService.generateSlideContent(
-                keyPoint: keyPoint,
+                keyPoint: keyPointModel,
                 audience: audience,
                 slideNumber: slideNumber,
                 totalSlides: totalSlides
             )
             
-            // Validate content before generating image
+            // Validate content before proceeding
             let validation = try await contentFilter.validateContent(
                 slideContent.content,
                 audience: audience
@@ -103,24 +113,12 @@ class OpenAIService: ObservableObject {
             
             if !validation.isApproved {
                 Logger.shared.warning("Slide content validation failed", category: .api)
-                throw OpenAIError.contentFiltered
+                throw OpenAIError.contentFiltered("Slide content validation failed")
             }
             
-            // Generate image
-            let imageData = try await dalleService.generateImageForAudience(
-                prompt: slideContent.imagePrompt,
-                audience: audience
-            )
+            Logger.shared.info("Slide \(slideNumber) content generated successfully", category: .api)
             
-            Logger.shared.info("Slide \(slideNumber) generated successfully", category: .api)
-            
-            return GeneratedSlide(
-                slideNumber: slideNumber,
-                title: slideContent.title,
-                content: slideContent.content,
-                imageData: imageData,
-                imagePrompt: slideContent.imagePrompt
-            )
+            return slideContent
             
         } catch let error as OpenAIError {
             lastError = error
@@ -133,41 +131,42 @@ class OpenAIService: ObservableObject {
         }
     }
     
-    /// Generates multiple slides in batch
+    /// Generates all slides with progress tracking
     /// - Parameters:
-    ///   - keyPoints: Teaching points to create slides for
-    ///   - audience: Target audience
-    ///   - progressCallback: Optional callback for progress updates (0.0-1.0)
-    /// - Returns: Array of generated slides
+    ///   - analysis: Content analysis result with key points
+    ///   - progressCallback: Optional callback for progress updates (current, total)
+    /// - Returns: Array of generated slide content
     func generateSlides(
-        keyPoints: [KeyPoint],
-        audience: Audience,
-        progressCallback: ((Double) -> Void)? = nil
-    ) async throws -> [GeneratedSlide] {
+        for analysis: ContentAnalysisResult,
+        progressCallback: ((Int, Int) -> Void)?
+    ) async throws -> [SlideContentResult] {
         isProcessing = true
         defer { isProcessing = false }
         
-        let totalSlides = keyPoints.count
-        var generatedSlides: [GeneratedSlide] = []
+        let totalSlides = analysis.keyPoints.count
+        var generatedSlides: [SlideContentResult] = []
         
-        Logger.shared.info("Generating \(totalSlides) slides for \(audience.rawValue) audience", category: .api)
+        // Extract main theme from first key point or use a generic theme
+        let mainTheme = analysis.keyPoints.first?.content ?? "Catholic Teaching"
         
-        for (index, keyPoint) in keyPoints.enumerated() {
+        Logger.shared.info("Generating \(totalSlides) slides", category: .api)
+        
+        for (index, keyPoint) in analysis.keyPoints.enumerated() {
             let slideNumber = index + 1
             
             do {
                 let slide = try await generateSlideContent(
-                    keyPoint: keyPoint,
-                    audience: audience,
                     slideNumber: slideNumber,
-                    totalSlides: totalSlides
+                    totalSlides: totalSlides,
+                    mainTheme: mainTheme,
+                    keyPoint: keyPoint.content,
+                    audience: .adults // Note: Should come from analysis or project settings
                 )
                 
                 generatedSlides.append(slide)
                 
                 // Update progress
-                let progress = Double(slideNumber) / Double(totalSlides)
-                progressCallback?(progress)
+                progressCallback?(slideNumber, totalSlides)
                 
                 // Small delay between slides to avoid rate limits
                 if slideNumber < totalSlides {
@@ -186,7 +185,7 @@ class OpenAIService: ObservableObject {
     
     // MARK: - Image Generation
     
-    /// Generates image for an existing slide
+    /// Generates image for a slide
     /// - Parameters:
     ///   - prompt: Image description
     ///   - audience: Target audience
@@ -220,13 +219,13 @@ class OpenAIService: ObservableObject {
     /// Generates multiple image variations
     /// - Parameters:
     ///   - prompt: Image description
-    ///   - count: Number of variations (1-4)
     ///   - audience: Target audience
+    ///   - count: Number of variations (1-4)
     /// - Returns: Array of image data
     func generateImageVariations(
         prompt: String,
-        count: Int = 2,
-        audience: Audience
+        audience: Audience,
+        count: Int
     ) async throws -> [Data] {
         isProcessing = true
         defer { isProcessing = false }
@@ -293,37 +292,4 @@ class OpenAIService: ObservableObject {
             throw OpenAIError.unknownError(error.localizedDescription)
         }
     }
-    
-    // MARK: - Content Filtering
-    
-    /// Validates content for appropriateness
-    /// - Parameters:
-    ///   - content: Content to validate
-    ///   - audience: Target audience
-    /// - Returns: Validation result
-    func validateContent(_ content: String, audience: Audience) async throws -> ContentValidationResult {
-        isProcessing = true
-        defer { isProcessing = false }
-        
-        do {
-            return try await contentFilter.validateContent(content, audience: audience)
-        } catch let error as OpenAIError {
-            lastError = error
-            throw error
-        } catch {
-            let mappedError = OpenAIError.unknownError(error.localizedDescription)
-            lastError = mappedError
-            throw mappedError
-        }
-    }
-}
-
-// MARK: - Generated Slide Type
-
-struct GeneratedSlide {
-    let slideNumber: Int
-    let title: String
-    let content: String
-    let imageData: Data
-    let imagePrompt: String
 }

@@ -14,7 +14,7 @@ actor DALLEService {
     
     init(apiKey: String, client: OpenAIProtocol? = nil) {
         self.apiKey = apiKey
-        self.client = client ?? OpenAI(apiKey: apiKey)
+        self.client = client ?? OpenAI(apiToken: apiKey)
     }
     
     // MARK: - Public Methods
@@ -36,12 +36,8 @@ actor DALLEService {
         // Download the image
         let imageData = try await downloadImage(from: firstURL)
         
-        // Optimize if needed
-        if request.optimize {
-            return try optimizeImage(imageData, targetSizeKB: 500)
-        }
-        
-        return imageData
+        // Always optimize
+        return try optimizeImage(imageData, targetSizeKB: 500)
     }
     
     /// Generates an image optimized for a specific audience
@@ -61,8 +57,7 @@ actor DALLEService {
             prompt: enhancedPrompt,
             size: size.rawValue,
             quality: audience == .kids ? "standard" : "hd",
-            style: audience == .kids ? "vivid" : "natural",
-            optimize: true
+            style: audience == .kids ? "vivid" : "natural"
         )
         
         Logger.shared.info(
@@ -92,8 +87,7 @@ actor DALLEService {
             n: validCount,
             size: ImageSize.medium.rawValue,
             quality: "standard",
-            style: audience == .kids ? "vivid" : "natural",
-            optimize: true
+            style: audience == .kids ? "vivid" : "natural"
         )
         
         let imageURLs = try await withRetry(maxAttempts: maxRetries) {
@@ -131,7 +125,7 @@ actor DALLEService {
                 n: request.n ?? 1,
                 quality: ImagesQuery.Quality(rawValue: request.quality ?? "standard") ?? .standard,
                 responseFormat: .url, // Get URLs instead of base64 for efficiency
-                size: ImagesQuery.Size(rawValue: request.size ?? "1024x1024") ?? ._1024x1024,
+                size: ImagesQuery.Size(rawValue: request.size ?? "1024x1024") ?? ._1024,
                 style: ImagesQuery.Style(rawValue: request.style ?? "vivid") ?? .vivid
             )
             
@@ -185,7 +179,7 @@ actor DALLEService {
     }
     
     /// Optimizes image by compressing if needed
-    private func optimizeImage(_ data: Data, targetSizeKB: Int) throws -> Data {
+    nonisolated private func optimizeImage(_ data: Data, targetSizeKB: Int) throws -> Data {
         guard let image = NSImage(data: data) else {
             throw OpenAIError.imageProcessingError("Could not create image from data")
         }
@@ -233,23 +227,15 @@ actor DALLEService {
     
     /// Enhances prompt with audience-specific styling
     private func enhancePromptForAudience(_ prompt: String, audience: Audience) -> String {
-        let designPrefs = audience.designPreferences
-        
         var enhancedPrompt = prompt
         
         // Add style guidance based on audience
         switch audience {
         case .kids:
-            enhancedPrompt += ", cartoon style, bright colors, simple shapes, cheerful and friendly"
-            if designPrefs.imageStyle.contains("playful") {
-                enhancedPrompt += ", playful and fun illustration"
-            }
+            enhancedPrompt += ", cartoon style, bright colors, simple shapes, cheerful and friendly, playful and fun illustration"
             
         case .adults:
-            enhancedPrompt += ", professional style, clean composition, sophisticated"
-            if designPrefs.imageStyle.contains("modern") {
-                enhancedPrompt += ", modern and contemporary aesthetic"
-            }
+            enhancedPrompt += ", professional style, clean composition, sophisticated, modern and contemporary aesthetic"
         }
         
         // Add Catholic context if not already present
@@ -328,7 +314,7 @@ actor DALLEService {
         }
         
         if errorDescription.contains("content policy") || errorDescription.contains("filtered") {
-            return .contentFiltered
+            return .contentFiltered("Image prompt rejected by content policy")
         }
         
         if errorDescription.contains("billing") || errorDescription.contains("quota") {

@@ -8,7 +8,6 @@ enum OpenAIError: LocalizedError {
     case invalidRequest(String)
     case modelNotAvailable(String)
     case contentFiltered(String)
-    case contentFiltered // Simplified case for basic filtering
     case serverError(Int)
     case timeout
     case networkError(Error)
@@ -35,9 +34,7 @@ enum OpenAIError: LocalizedError {
         case .modelNotAvailable(let model):
             return "Model '\(model)' is not available"
         case .contentFiltered(let reason):
-            return "Content was filtered: \(reason)"
-        case .contentFiltered:
-            return "Content was filtered by OpenAI"
+            return reason.isEmpty ? "Content was filtered by OpenAI" : "Content was filtered: \(reason)"
         case .serverError(let code):
             return "OpenAI server error (code: \(code))"
         case .timeout:
@@ -77,7 +74,7 @@ enum OpenAIError: LocalizedError {
             return "Check the request parameters and try again."
         case .modelNotAvailable:
             return "Try using a different model or check your OpenAI account access."
-        case .contentFiltered(_), .contentFiltered:
+        case .contentFiltered:
             return "Modify the content to comply with OpenAI's content policy."
         case .serverError:
             return "This is a temporary server issue. Please try again in a few moments."
@@ -106,7 +103,7 @@ enum OpenAIError: LocalizedError {
             return "The request format or parameters are invalid"
         case .modelNotAvailable:
             return "The requested AI model is not accessible"
-        case .contentFiltered(_), .contentFiltered:
+        case .contentFiltered:
             return "OpenAI's content filter blocked the request"
         case .serverError:
             return "OpenAI's servers encountered an error"

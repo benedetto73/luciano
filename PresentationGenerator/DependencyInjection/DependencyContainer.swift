@@ -24,29 +24,11 @@ protocol FileRepositoryProtocol {
     func cleanupUnusedImages(usedSlideIds: Set<UUID>) async throws
 }
 
-protocol OpenAIServiceProtocol {
-    func analyzeContent(text: String, audience: Audience) async throws -> ContentAnalysisResult
-    func generateSlideContent(keyPoint: KeyPoint, audience: Audience, slideNumber: Int, totalSlides: Int) async throws -> SlideContent
-    func generateImage(prompt: String, style: ImageStyle) async throws -> Data
-    func validateAPIKey(_ key: String) async throws -> Bool
-}
-
 protocol PowerPointExporterProtocol {
     func export(project: Project, to url: URL) async throws
 }
 
 // MARK: - Placeholder Types
-
-struct SlideContent {
-    let title: String
-    let content: String
-    let imagePrompt: String
-}
-
-enum ImageStyle {
-    case kidsCartoon
-    case adultsProfessional
-}
 
 class ContentAnalyzer {}
 class SlideGenerator {}
@@ -84,10 +66,15 @@ class DependencyContainer: ObservableObject {
         ImageService(fileRepository: fileRepository)
     }()
     
-    lazy var openAIService: OpenAIServiceProtocol = {
-        // TODO: Implement in Phase 3 - Tasks 19-21
-        // Will need GPTService and DALLEService
-        fatalError("OpenAIService not yet implemented - Phase 3, Tasks 19-21")
+    lazy var openAIService: any OpenAIServiceProtocol = {
+        // Retrieve API key from keychain
+        guard let apiKey = try? keychainRepository.retrieve(), !apiKey.isEmpty else {
+            Logger.shared.warning("No API key found in keychain, using mock service", category: .api)
+            return MockOpenAIService.fast
+        }
+        
+        Logger.shared.info("Initializing OpenAI service with stored API key", category: .api)
+        return OpenAIService(apiKey: apiKey)
     }()
     
     lazy var contentAnalyzer: ContentAnalyzer = {
