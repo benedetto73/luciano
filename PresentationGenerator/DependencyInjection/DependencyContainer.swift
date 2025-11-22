@@ -101,9 +101,12 @@ class DependencyContainer: ObservableObject {
         )
     }()
     
-    lazy var powerPointExporter: PowerPointExporterProtocol = {
-        // TODO: Implement in Phase 4 - Task 31
-        fatalError("PowerPointExporter not yet implemented - Phase 4, Task 31")
+    lazy var slideRenderer: SlideRenderer = {
+        SlideRenderer(imageService: imageService)
+    }()
+    
+    lazy var powerPointExporter: PowerPointExporter = {
+        PowerPointExporter(slideRenderer: slideRenderer)
     }()
     
     // MARK: - Coordinator
