@@ -17,6 +17,7 @@ class Logger {
         case network = "Network"
         case api = "API" // Added for OpenAI API calls
         case openai = "OpenAI"
+        case business = "Business" // Business logic operations
         case storage = "Storage"
         case keychain = "Keychain"
         case fileImport = "FileImport"

@@ -30,8 +30,6 @@ protocol PowerPointExporterProtocol {
 
 // MARK: - Placeholder Types
 
-class ContentAnalyzer {}
-class SlideGenerator {}
 class ProjectListViewModel {}
 class ContentAnalysisViewModel {}
 class SlideGenerationViewModel {}
@@ -78,13 +76,21 @@ class DependencyContainer: ObservableObject {
     }()
     
     lazy var contentAnalyzer: ContentAnalyzer = {
-        // TODO: Implement in Phase 4 - Task 25
-        fatalError("ContentAnalyzer not yet implemented - Phase 4, Task 25")
+        ContentAnalyzer(
+            openAIService: openAIService,
+            fileRepository: fileRepository
+        )
+    }()
+    
+    lazy var slideDesigner: SlideDesigner = {
+        SlideDesigner()
     }()
     
     lazy var slideGenerator: SlideGenerator = {
-        // TODO: Implement in Phase 4 - Task 27
-        fatalError("SlideGenerator not yet implemented - Phase 4, Task 27")
+        SlideGenerator(
+            openAIService: openAIService,
+            imageService: imageService
+        )
     }()
     
     lazy var powerPointExporter: PowerPointExporterProtocol = {
