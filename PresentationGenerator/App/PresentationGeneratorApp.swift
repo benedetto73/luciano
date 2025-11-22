@@ -14,7 +14,7 @@ struct PresentationGeneratorApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootView(dependencyContainer: dependencyContainer)
                 .environmentObject(coordinator)
                 .environmentObject(dependencyContainer)
                 .frame(minWidth: 1000, minHeight: 700)

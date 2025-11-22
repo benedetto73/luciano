@@ -1,15 +1,19 @@
 import Foundation
 
-// Placeholder for AppCoordinator
-// Will be implemented in Phase 6 (Tasks 35-37)
-
 @MainActor
 class AppCoordinator: ObservableObject {
+    @Published var currentState: AppState = .splash
     @Published var currentScreen: AppScreen = .apiKeySetup
     @Published var navigationPath: [AppScreen] = []
     
     private let keychainRepository: KeychainRepositoryProtocol
     private let dependencyContainer: DependencyContainer
+    
+    enum AppState {
+        case splash
+        case apiKeySetup
+        case mainApp
+    }
     
     init(
         keychainRepository: KeychainRepositoryProtocol,
@@ -17,11 +21,35 @@ class AppCoordinator: ObservableObject {
     ) {
         self.keychainRepository = keychainRepository
         self.dependencyContainer = dependencyContainer
-        checkAPIKeyAndSetInitialScreen()
+    }
+    
+    func start() {
+        // Always show splash first
+        currentState = .splash
+    }
+    
+    func completeSplash() {
+        // Check if user has completed setup
+        let hasCompletedSetup = UserDefaults.standard.bool(forKey: "hasCompletedSetup")
+        
+        if hasCompletedSetup {
+            // Setup already done, go to main app
+            currentState = .mainApp
+            currentScreen = .projectList
+        } else {
+            // First run, show API key setup
+            currentState = .apiKeySetup
+        }
+    }
+    
+    func completeAPIKeySetup(useFreeModels: Bool) {
+        Logger.shared.info("API setup completed, free models: \(useFreeModels)", category: .app)
+        currentState = .mainApp
+        currentScreen = .projectList
     }
     
     private func checkAPIKeyAndSetInitialScreen() {
-        // TODO: Implement in Phase 6
+        // Deprecated - now using start() method
         currentScreen = .apiKeySetup
     }
     

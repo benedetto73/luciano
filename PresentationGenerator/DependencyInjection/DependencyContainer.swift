@@ -65,6 +65,14 @@ class DependencyContainer: ObservableObject {
     }()
     
     lazy var openAIService: any OpenAIServiceProtocol = {
+        // Check if user chose free models
+        let useFreeModels = UserDefaults.standard.bool(forKey: "useFreeModels")
+        
+        if useFreeModels {
+            Logger.shared.info("Using free models (mock service)", category: .api)
+            return MockOpenAIService.realistic
+        }
+        
         // Retrieve API key from keychain
         guard let apiKey = try? keychainRepository.retrieve(), !apiKey.isEmpty else {
             Logger.shared.warning("No API key found in keychain, using mock service", category: .api)

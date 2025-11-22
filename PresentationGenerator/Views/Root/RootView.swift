@@ -1,10 +1,44 @@
 import SwiftUI
 
-// Placeholder for RootView
-// Will be implemented in Phase 6 (Task 37)
-
 struct RootView: View {
-    @EnvironmentObject var coordinator: AppCoordinator
+    @StateObject private var coordinator: AppCoordinator
+    private let dependencyContainer: DependencyContainer
+    
+    init(dependencyContainer: DependencyContainer) {
+        self.dependencyContainer = dependencyContainer
+        _coordinator = StateObject(wrappedValue: dependencyContainer.appCoordinator)
+    }
+    
+    var body: some View {
+        Group {
+            switch coordinator.currentState {
+            case .splash:
+                SplashView(onComplete: {
+                    coordinator.completeSplash()
+                })
+                
+            case .apiKeySetup:
+                APIKeySetupView(
+                    dependencyContainer: dependencyContainer,
+                    onComplete: { useFreeModels in
+                        coordinator.completeAPIKeySetup(useFreeModels: useFreeModels)
+                    }
+                )
+                
+            case .mainApp:
+                MainAppView(coordinator: coordinator)
+            }
+        }
+        .onAppear {
+            coordinator.start()
+        }
+    }
+}
+
+// MARK: - Main App Navigation
+
+struct MainAppView: View {
+    @ObservedObject var coordinator: AppCoordinator
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath) {
@@ -24,7 +58,7 @@ struct RootView: View {
     private func viewForScreen(_ screen: AppScreen) -> some View {
         switch screen {
         case .apiKeySetup:
-            Text("API Key Setup - To be implemented")
+            Text("API Key Setup - Should not appear here")
         case .projectList:
             Text("Project List - To be implemented")
         case .projectCreation:
