@@ -8,7 +8,7 @@ enum AppScreen: Hashable {
     case contentImport(UUID)
     case contentAnalysis(UUID)
     case slideGeneration(UUID)
-    case slideEditor(UUID)
+    case slideEditor(projectID: UUID, slideID: UUID)
     case export(UUID)
     case settings
     case apiKeySetup
@@ -82,6 +82,15 @@ class AppCoordinator: ObservableObject {
         currentScreen = navigationPath.last ?? .projectList
     }
     
+    func replace(_ screen: AppScreen) {
+        guard !navigationPath.isEmpty else {
+            push(screen)
+            return
+        }
+        navigationPath[navigationPath.count - 1] = screen
+        currentScreen = screen
+    }
+    
     func popToRoot() {
         navigationPath.removeAll()
         currentScreen = .projectList
@@ -113,8 +122,8 @@ class AppCoordinator: ObservableObject {
         push(.slideGeneration(projectID))
     }
     
-    func showSlideEditor(projectID: UUID) {
-        push(.slideEditor(projectID))
+    func showSlideEditor(projectID: UUID, slideID: UUID) {
+        push(.slideEditor(projectID: projectID, slideID: slideID))
     }
     
     func showExport(projectID: UUID) {

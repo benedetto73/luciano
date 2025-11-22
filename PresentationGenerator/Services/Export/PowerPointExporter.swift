@@ -10,7 +10,7 @@ import AppKit
 
 /// Service for exporting presentations to PowerPoint format
 @MainActor
-class PowerPointExporter: ObservableObject {
+class PowerPointExporter: ObservableObject, PowerPointExporterProtocol {
     private let slideRenderer: SlideRenderer
     
     @Published var isExporting = false
@@ -24,6 +24,19 @@ class PowerPointExporter: ObservableObject {
     }
     
     // MARK: - Export
+    
+    /// Exports a project to PowerPoint format (Protocol conformance)
+    /// - Parameters:
+    ///   - project: Project to export
+    ///   - url: Output file URL
+    func export(project: Project, to url: URL) async throws {
+        try await exportPresentation(
+            slides: project.slides,
+            title: project.name,
+            to: url,
+            progressCallback: nil
+        )
+    }
     
     /// Exports a presentation to PowerPoint format
     /// - Parameters:

@@ -89,9 +89,9 @@ struct MainAppView: View {
             SlideGenerationView(
                 viewModel: dependencyContainer.makeSlideGenerationViewModel(projectID: projectID)
             )
-        case .slideEditor(let projectID):
-            SlideListView(
-                viewModel: dependencyContainer.makeSlideListViewModel(projectID: projectID)
+        case .slideEditor(let projectID, let slideID):
+            SlideEditorView(
+                viewModel: dependencyContainer.makeSlideEditorViewModel(projectID: projectID, slideID: slideID)
             )
         case .export(let projectID):
             ExportView(

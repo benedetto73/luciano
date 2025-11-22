@@ -90,6 +90,7 @@ class SlideListViewModel: ObservableObject {
     
     func selectSlide(_ slide: Slide) {
         selectedSlide = slide
+        appCoordinator.showSlideEditor(projectID: projectID, slideID: slide.id)
     }
     
     func close() {

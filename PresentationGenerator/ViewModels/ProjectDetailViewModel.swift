@@ -150,7 +150,7 @@ class ProjectDetailViewModel: ObservableObject {
     }
     
     func viewSlides() {
-        appCoordinator.showSlideEditor(projectID: projectID)
+        appCoordinator.showExport(projectID: projectID)
     }
     
     func exportPresentation() {

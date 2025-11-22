@@ -92,7 +92,7 @@ class SlideGenerationViewModel: ObservableObject {
     
     func viewSlides() {
         guard let project = project else { return }
-        appCoordinator.showSlideEditor(projectID: project.id)
+        appCoordinator.showExport(projectID: project.id)
     }
     
     func exportPresentation() {

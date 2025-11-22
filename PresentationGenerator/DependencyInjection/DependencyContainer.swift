@@ -194,5 +194,14 @@ class DependencyContainer: ObservableObject {
             appCoordinator: appCoordinator
         )
     }
+    
+    func makeSlideEditorViewModel(projectID: UUID, slideID: UUID) -> SlideEditorViewModel {
+        SlideEditorViewModel(
+            projectID: projectID,
+            slideID: slideID,
+            projectManager: projectManager,
+            appCoordinator: appCoordinator
+        )
+    }
 }
 
