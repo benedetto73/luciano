@@ -88,17 +88,10 @@ class ProjectRepository: ProjectRepositoryProtocol {
     func duplicate(projectID: UUID, newName: String? = nil) async throws -> Project {
         let original = try storageManager.load(projectID: projectID)
         
-        var duplicate = original
-        duplicate.id = UUID()
-        duplicate.name = newName ?? "\(original.name) (Copy)"
-        duplicate.createdDate = Date()
-        duplicate.modifiedDate = Date()
-        
         // Duplicate images
         var updatedSlides: [Slide] = []
-        for slide in duplicate.slides {
-            var updatedSlide = slide
-            updatedSlide.id = UUID()
+        for slide in original.slides {
+            var newImageData: ImageData? = nil
             
             if let imageData = slide.imageData,
                let originalURL = imageData.localURL {
@@ -109,15 +102,41 @@ class ProjectRepository: ProjectRepositoryProtocol {
                 
                 try? fileManager.copyItem(at: originalURL, to: newImageURL)
                 
-                var newImageData = imageData
-                newImageData.id = UUID()
-                newImageData.localURL = newImageURL
-                updatedSlide.imageData = newImageData
+                newImageData = ImageData(
+                    id: UUID(),
+                    localURL: newImageURL,
+                    remoteURL: imageData.remoteURL,
+                    generationPrompt: imageData.generationPrompt,
+                    width: imageData.width,
+                    height: imageData.height,
+                    format: imageData.format
+                )
             }
+            
+            let updatedSlide = Slide(
+                id: UUID(),
+                slideNumber: slide.slideNumber,
+                title: slide.title,
+                content: slide.content,
+                imageData: newImageData,
+                designSpec: slide.designSpec,
+                notes: slide.notes
+            )
             
             updatedSlides.append(updatedSlide)
         }
-        duplicate.slides = updatedSlides
+        
+        let duplicate = Project(
+            id: UUID(),
+            name: newName ?? "\(original.name) (Copy)",
+            audience: original.audience,
+            createdDate: Date(),
+            modifiedDate: Date(),
+            sourceFiles: original.sourceFiles,
+            keyPoints: original.keyPoints,
+            slides: updatedSlides,
+            settings: original.settings
+        )
         
         try storageManager.save(duplicate)
         Logger.shared.info("Project duplicated: \(duplicate.name)", category: .storage)

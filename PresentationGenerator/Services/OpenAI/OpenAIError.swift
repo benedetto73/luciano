@@ -8,14 +8,19 @@ enum OpenAIError: LocalizedError {
     case invalidRequest(String)
     case modelNotAvailable(String)
     case contentFiltered(String)
+    case contentFiltered // Simplified case for basic filtering
     case serverError(Int)
     case timeout
     case networkError(Error)
     case invalidResponse
+    case invalidResponseFormat(String) // Added for JSON parsing failures
+    case emptyResponse // Added for missing content
     case decodingError(Error)
     case imageGenerationFailed(String)
+    case imageProcessingError(String) // Added for image processing
     case textGenerationFailed(String)
     case unknown(String)
+    case unknownError(String) // Alias for 'unknown'
     
     var errorDescription: String? {
         switch self {
@@ -31,6 +36,8 @@ enum OpenAIError: LocalizedError {
             return "Model '\(model)' is not available"
         case .contentFiltered(let reason):
             return "Content was filtered: \(reason)"
+        case .contentFiltered:
+            return "Content was filtered by OpenAI"
         case .serverError(let code):
             return "OpenAI server error (code: \(code))"
         case .timeout:
@@ -39,14 +46,22 @@ enum OpenAIError: LocalizedError {
             return "Network error: \(error.localizedDescription)"
         case .invalidResponse:
             return "Invalid response from OpenAI"
+        case .invalidResponseFormat(let message):
+            return "Invalid response format: \(message)"
+        case .emptyResponse:
+            return "OpenAI returned an empty response"
         case .decodingError(let error):
             return "Failed to decode response: \(error.localizedDescription)"
         case .imageGenerationFailed(let reason):
             return "Image generation failed: \(reason)"
+        case .imageProcessingError(let reason):
+            return "Image processing error: \(reason)"
         case .textGenerationFailed(let reason):
             return "Text generation failed: \(reason)"
         case .unknown(let message):
             return "Unknown OpenAI error: \(message)"
+        case .unknownError(let message):
+            return "Unknown error: \(message)"
         }
     }
     
@@ -62,7 +77,7 @@ enum OpenAIError: LocalizedError {
             return "Check the request parameters and try again."
         case .modelNotAvailable:
             return "Try using a different model or check your OpenAI account access."
-        case .contentFiltered:
+        case .contentFiltered(_), .contentFiltered:
             return "Modify the content to comply with OpenAI's content policy."
         case .serverError:
             return "This is a temporary server issue. Please try again in a few moments."
@@ -70,11 +85,11 @@ enum OpenAIError: LocalizedError {
             return "The request took too long. Please try again."
         case .networkError:
             return "Check your internet connection and try again."
-        case .invalidResponse, .decodingError:
+        case .invalidResponse, .invalidResponseFormat, .emptyResponse, .decodingError:
             return "This might be a temporary issue. Please try again."
-        case .imageGenerationFailed, .textGenerationFailed:
+        case .imageGenerationFailed, .imageProcessingError, .textGenerationFailed:
             return "Try regenerating with a different prompt or parameters."
-        case .unknown:
+        case .unknown, .unknownError:
             return "Please try again or contact support if the issue persists."
         }
     }
@@ -91,7 +106,7 @@ enum OpenAIError: LocalizedError {
             return "The request format or parameters are invalid"
         case .modelNotAvailable:
             return "The requested AI model is not accessible"
-        case .contentFiltered:
+        case .contentFiltered(_), .contentFiltered:
             return "OpenAI's content filter blocked the request"
         case .serverError:
             return "OpenAI's servers encountered an error"
@@ -99,15 +114,15 @@ enum OpenAIError: LocalizedError {
             return "The request exceeded the time limit"
         case .networkError:
             return "Unable to reach OpenAI's servers"
-        case .invalidResponse:
+        case .invalidResponse, .invalidResponseFormat, .emptyResponse:
             return "The server response was malformed"
         case .decodingError:
             return "Unable to parse the server response"
-        case .imageGenerationFailed:
+        case .imageGenerationFailed, .imageProcessingError:
             return "DALL-E could not generate the requested image"
         case .textGenerationFailed:
             return "GPT could not generate the requested text"
-        case .unknown:
+        case .unknown, .unknownError:
             return "An unexpected error occurred"
         }
     }

@@ -4,7 +4,9 @@ import SwiftUI
 /// Centralized error handling utility
 @MainActor
 class ErrorHandler: ObservableObject {
-    static let shared = ErrorHandler()
+    static let shared: ErrorHandler = {
+        ErrorHandler()
+    }()
     
     @Published var currentError: AppError?
     @Published var showingError = false
@@ -178,7 +180,13 @@ class ErrorHandler: ObservableObject {
 // MARK: - SwiftUI Error Alert Modifier
 extension View {
     /// Adds automatic error handling with alerts
-    func withErrorHandling(errorHandler: ErrorHandler = .shared) -> some View {
+    func withErrorHandling() -> some View {
+        @MainActor func makeHandler() -> ErrorHandler { .shared }
+        return self.withErrorHandling(errorHandler: makeHandler())
+    }
+    
+    /// Adds automatic error handling with alerts using a custom handler
+    func withErrorHandling(errorHandler: ErrorHandler) -> some View {
         self.alert(
             "Error",
             isPresented: Binding(

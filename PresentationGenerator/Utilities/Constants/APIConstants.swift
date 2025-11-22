@@ -4,9 +4,9 @@ import Foundation
 enum APIConstants {
     // MARK: - API Endpoints
     static let baseURL = "https://api.openai.com/v1"
-    static let chatCompletionsEndpoint = "/chat/completions"
-    static let imagesGenerationsEndpoint = "/images/generations"
-    static let modelsEndpoint = "/models"
+    static let chatCompletionsEndpoint = "\(baseURL)/chat/completions"
+    static let imagesGenerationsEndpoint = "\(baseURL)/images/generations"
+    static let modelsEndpoint = "\(baseURL)/models"
     
     // MARK: - Model Names
     enum Model {
@@ -23,6 +23,11 @@ enum APIConstants {
         static let defaultTextModel = gpt4Turbo
         static let defaultImageModel = dalle3
     }
+    
+    // Legacy top-level constants for backward compatibility
+    static let defaultModel = Model.defaultTextModel
+    static let defaultTemperature = Parameters.defaultTemperature
+    static let defaultMaxTokens = Parameters.defaultMaxTokens
     
     // MARK: - Request Parameters
     enum Parameters {

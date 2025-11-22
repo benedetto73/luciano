@@ -1,51 +1,7 @@
 import Foundation
 
-// Placeholder for DependencyContainer
-// Will be fully implemented in Phase 5 (Tasks 32-34)
+// MARK: - Protocol Definitions
 
-class DependencyContainer: ObservableObject {
-    // MARK: - Repositories
-    lazy var keychainRepository: KeychainRepositoryProtocol = {
-        // TODO: Implement in Phase 2
-        fatalError("KeychainRepository not yet implemented")
-    }()
-    
-    lazy var projectRepository: ProjectRepositoryProtocol = {
-        // TODO: Implement in Phase 2
-        fatalError("ProjectRepository not yet implemented")
-    }()
-    
-    lazy var fileRepository: FileRepositoryProtocol = {
-        // TODO: Implement in Phase 2
-        fatalError("FileRepository not yet implemented")
-    }()
-    
-    // MARK: - Services
-    lazy var openAIService: OpenAIServiceProtocol = {
-        // TODO: Implement in Phase 3
-        fatalError("OpenAIService not yet implemented")
-    }()
-    
-    lazy var contentAnalyzer: ContentAnalyzer = {
-        // TODO: Implement in Phase 4
-        fatalError("ContentAnalyzer not yet implemented")
-    }()
-    
-    lazy var slideGenerator: SlideGenerator = {
-        // TODO: Implement in Phase 4
-        fatalError("SlideGenerator not yet implemented")
-    }()
-    
-    // MARK: - Coordinator
-    lazy var appCoordinator: AppCoordinator = {
-        AppCoordinator(
-            keychainRepository: keychainRepository,
-            dependencyContainer: self
-        )
-    }()
-}
-
-// MARK: - Placeholder Protocol Definitions
 protocol KeychainRepositoryProtocol {
     func save(apiKey: String) throws
     func retrieve() throws -> String?
@@ -64,6 +20,8 @@ protocol FileRepositoryProtocol {
     func importDocument(from url: URL) async throws -> String
     func saveImage(_ data: Data, for slideId: UUID) async throws -> URL
     func loadImage(for slideId: UUID) async throws -> Data
+    func deleteImage(for slideId: UUID) async throws
+    func cleanupUnusedImages(usedSlideIds: Set<UUID>) async throws
 }
 
 protocol OpenAIServiceProtocol {
@@ -73,11 +31,11 @@ protocol OpenAIServiceProtocol {
     func validateAPIKey(_ key: String) async throws -> Bool
 }
 
-// Placeholder types
-struct ContentAnalysisResult {
-    let keyPoints: [KeyPoint]
-    let suggestedSlideCount: Int
+protocol PowerPointExporterProtocol {
+    func export(project: Project, to url: URL) async throws
 }
+
+// MARK: - Placeholder Types
 
 struct SlideContent {
     let title: String
@@ -92,3 +50,85 @@ enum ImageStyle {
 
 class ContentAnalyzer {}
 class SlideGenerator {}
+class ProjectListViewModel {}
+class ContentAnalysisViewModel {}
+class SlideGenerationViewModel {}
+
+/// Dependency Injection Container for the application
+/// Manages creation and lifecycle of all major components
+@MainActor
+class DependencyContainer: ObservableObject {
+    // MARK: - Repositories
+    
+    lazy var keychainRepository: KeychainRepositoryProtocol = {
+        KeychainRepository()
+    }()
+    
+    lazy var projectRepository: ProjectRepositoryProtocol = {
+        ProjectRepository(
+            storageManager: ProjectStorageManager(),
+            fileManager: .default
+        )
+    }()
+    
+    lazy var fileRepository: FileRepositoryProtocol = {
+        FileRepository(
+            documentParser: DocumentParser(),
+            fileManager: .default
+        )
+    }()
+    
+    // MARK: - Services
+    
+    lazy var imageService: ImageService = {
+        ImageService(fileRepository: fileRepository)
+    }()
+    
+    lazy var openAIService: OpenAIServiceProtocol = {
+        // TODO: Implement in Phase 3 - Tasks 19-21
+        // Will need GPTService and DALLEService
+        fatalError("OpenAIService not yet implemented - Phase 3, Tasks 19-21")
+    }()
+    
+    lazy var contentAnalyzer: ContentAnalyzer = {
+        // TODO: Implement in Phase 4 - Task 25
+        fatalError("ContentAnalyzer not yet implemented - Phase 4, Task 25")
+    }()
+    
+    lazy var slideGenerator: SlideGenerator = {
+        // TODO: Implement in Phase 4 - Task 27
+        fatalError("SlideGenerator not yet implemented - Phase 4, Task 27")
+    }()
+    
+    lazy var powerPointExporter: PowerPointExporterProtocol = {
+        // TODO: Implement in Phase 4 - Task 31
+        fatalError("PowerPointExporter not yet implemented - Phase 4, Task 31")
+    }()
+    
+    // MARK: - Coordinator
+    
+    lazy var appCoordinator: AppCoordinator = {
+        AppCoordinator(
+            keychainRepository: keychainRepository,
+            dependencyContainer: self
+        )
+    }()
+    
+    // MARK: - ViewModels Factory Methods
+    
+    func makeProjectListViewModel() -> ProjectListViewModel {
+        // TODO: Implement in Phase 7 - Task 45
+        fatalError("ProjectListViewModel not yet implemented - Phase 7, Task 45")
+    }
+    
+    func makeContentAnalysisViewModel(project: Project) -> ContentAnalysisViewModel {
+        // TODO: Implement in Phase 9 - Task 55
+        fatalError("ContentAnalysisViewModel not yet implemented - Phase 9, Task 55")
+    }
+    
+    func makeSlideGenerationViewModel(project: Project) -> SlideGenerationViewModel {
+        // TODO: Implement in Phase 10 - Task 60
+        fatalError("SlideGenerationViewModel not yet implemented - Phase 10, Task 60")
+    }
+}
+

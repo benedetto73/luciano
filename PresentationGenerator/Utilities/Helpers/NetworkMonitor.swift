@@ -33,7 +33,7 @@ class NetworkMonitor: ObservableObject {
     }
     
     deinit {
-        stopMonitoring()
+        monitor.cancel()
     }
     
     // MARK: - Public Methods
@@ -56,9 +56,14 @@ class NetworkMonitor: ObservableObject {
         monitor.start(queue: queue)
     }
     
+    /// Stops monitoring network connectivity (called from deinit - non-async)
+    nonisolated private func cleanup() {
+        monitor.cancel()
+    }
+    
     /// Stops monitoring network connectivity
     func stopMonitoring() {
-        monitor.cancel()
+        cleanup()
     }
     
     /// Checks if network is currently available

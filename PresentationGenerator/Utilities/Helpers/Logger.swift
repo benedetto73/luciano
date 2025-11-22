@@ -15,6 +15,7 @@ class Logger {
         case app = "App"
         case ui = "UI"
         case network = "Network"
+        case api = "API" // Added for OpenAI API calls
         case openai = "OpenAI"
         case storage = "Storage"
         case keychain = "Keychain"
