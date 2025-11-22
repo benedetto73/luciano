@@ -56,8 +56,6 @@ enum OpenAIError: LocalizedError {
             return "Text generation failed: \(reason)"
         case .unknown(let message):
             return "Unknown OpenAI error: \(message)"
-        case .unknown(let message):
-            return "Unknown error: \(message)"
         }
     }
     

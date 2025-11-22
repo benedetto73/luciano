@@ -24,6 +24,7 @@ class Logger {
         case slideGeneration = "SlideGeneration"
         case export = "Export"
         case error = "Error"
+        case performance = "Performance"
     }
     
     // MARK: - Private Methods
