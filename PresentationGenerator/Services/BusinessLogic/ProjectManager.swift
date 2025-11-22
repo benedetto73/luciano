@@ -238,6 +238,23 @@ class ProjectManager: ObservableObject {
         try await updateProject(updatedProject)
     }
     
+    /// Updates a key point's content
+    func updateKeyPoint(in project: Project, keyPointId: UUID, newContent: String) async throws {
+        var updatedProject = project
+        
+        // Find and update the key point
+        guard let index = updatedProject.keyPoints.firstIndex(where: { $0.id == keyPointId }) else {
+            throw AppError.unknown("Key point not found")
+        }
+        
+        updatedProject.keyPoints[index].content = newContent
+        
+        // Save the updated project
+        try await updateProject(updatedProject)
+        
+        Logger.shared.info("Key point updated: \(keyPointId)", category: .business)
+    }
+    
     /// Analyzes content and generates key points
     func analyzeContent(project: Project, progressCallback: ((Int) -> Void)? = nil) async throws -> ContentAnalysisResult {
         guard !project.sourceFiles.isEmpty else {

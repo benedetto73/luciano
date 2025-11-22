@@ -40,6 +40,10 @@ class ProjectDetailViewModel: ObservableObject {
     // File picker state
     @Published var showingFilePicker = false
     
+    // Key point editing state
+    @Published var editingKeyPointId: UUID?
+    @Published var editingKeyPointText: String = ""
+    
     // Task management for cancellation
     private var analysisTask: Task<Void, Never>?
     private var generationTask: Task<Void, Never>?
@@ -376,6 +380,78 @@ class ProjectDetailViewModel: ObservableObject {
         errorTitle = ""
         updateWorkflowState()
     }
+    
+    // MARK: - Key Point Editing
+    
+    func startEditingKeyPoint(id: UUID) {
+        guard let project = project,
+              let keyPoint = project.keyPoints.first(where: { $0.id == id }) else { return }
+        editingKeyPointId = id
+        editingKeyPointText = keyPoint.content
+    }
+    
+    func cancelKeyPointEdit() {
+        editingKeyPointId = nil
+        editingKeyPointText = ""
+    }
+    
+    func saveKeyPointEdit() async {
+        guard let keyPointId = editingKeyPointId,
+              let project = project else { return }
+        
+        // Validate
+        let trimmed = editingKeyPointText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count >= 10 && trimmed.count <= 500 else {
+            errorTitle = "Invalid Key Point"
+            errorMessage = "Key point must be between 10 and 500 characters."
+            showError = true
+            return
+        }
+        
+        // Update key point
+        do {
+            try await projectManager.updateKeyPoint(
+                in: project,
+                keyPointId: keyPointId,
+                newContent: trimmed
+            )
+            
+            // Reload project to get updates
+            await loadProject()
+            
+            // Clear editing state
+            editingKeyPointId = nil
+            editingKeyPointText = ""
+            
+        } catch {
+            errorTitle = "Save Failed"
+            errorMessage = error.localizedDescription
+            showError = true
+        }
+    }
+    
+    func autoSaveKeyPointEdit() async {
+        guard let keyPointId = editingKeyPointId,
+              let project = project else { return }
+        
+        // Validate
+        let trimmed = editingKeyPointText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count >= 10 && trimmed.count <= 500 else { return }
+        
+        // Auto-save without clearing editing state
+        do {
+            try await projectManager.updateKeyPoint(
+                in: project,
+                keyPointId: keyPointId,
+                newContent: trimmed
+            )
+            await loadProject()
+        } catch {
+            // Silently fail for auto-save
+        }
+    }
+    
+    // MARK: - Workflow Actions (continued)
     
     func viewSlides() {
         appCoordinator.showExport(projectID: projectID)

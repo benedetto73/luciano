@@ -319,17 +319,11 @@ struct AnalyzePlayground: View {
                         
                         if let keyPoints = viewModel.project?.keyPoints {
                             ForEach(Array(keyPoints.enumerated()), id: \.element.id) { index, keyPoint in
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Key Point \(index + 1)")
-                                        .font(.headline)
-                                    
-                                    Text(keyPoint.content)
-                                        .font(.body)
-                                        .foregroundColor(.secondary)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding()
-                                .playgroundCard()
+                                EditableKeyPointCard(
+                                    keyPoint: keyPoint,
+                                    index: index,
+                                    viewModel: viewModel
+                                )
                             }
                         }
                     }
@@ -754,6 +748,140 @@ struct EmptyPhaseState: View {
         .frame(maxWidth: .infinity)
         .frame(height: 300)
         .playgroundCard()
+    }
+}
+
+// MARK: - Editable Key Point Card
+
+struct EditableKeyPointCard: View {
+    let keyPoint: KeyPoint
+    let index: Int
+    @ObservedObject var viewModel: ProjectDetailViewModel
+    
+    @State private var isHovered = false
+    @FocusState private var isFocused: Bool
+    
+    private var isEditing: Bool {
+        viewModel.editingKeyPointId == keyPoint.id
+    }
+    
+    private var characterCount: Int {
+        viewModel.editingKeyPointText.count
+    }
+    
+    private var isValid: Bool {
+        let count = viewModel.editingKeyPointText.trimmingCharacters(in: .whitespacesAndNewlines).count
+        return count >= 10 && count <= 500
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Key Point \(index + 1)")
+                    .font(.headline)
+                
+                Spacer()
+                
+                if isEditing {
+                    HStack(spacing: 8) {
+                        Button("Cancel") {
+                            viewModel.cancelKeyPointEdit()
+                        }
+                        .buttonStyle(.bordered)
+                        .keyboardShortcut(.escape, modifiers: [])
+                        
+                        Button("Save") {
+                            Task {
+                                await viewModel.saveKeyPointEdit()
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(!isValid)
+                        .keyboardShortcut(.return, modifiers: .command)
+                    }
+                    .controlSize(.small)
+                } else if isHovered {
+                    Button {
+                        viewModel.startEditingKeyPoint(id: keyPoint.id)
+                        isFocused = true
+                    } label: {
+                        Image(systemName: "pencil")
+                            .foregroundColor(.accentColor)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Edit key point")
+                }
+            }
+            
+            if isEditing {
+                VStack(alignment: .leading, spacing: 8) {
+                    TextEditor(text: $viewModel.editingKeyPointText)
+                        .font(.body)
+                        .frame(minHeight: 100)
+                        .padding(8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(NSColor.textBackgroundColor))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .strokeBorder(
+                                    isValid ? Color.accentColor : Color.red,
+                                    lineWidth: 2
+                                )
+                        )
+                        .focused($isFocused)
+                        .onChange(of: viewModel.editingKeyPointText) { _ in
+                            // Auto-save after 1 second of no typing
+                            Task {
+                                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                                await viewModel.autoSaveKeyPointEdit()
+                            }
+                        }
+                    
+                    HStack {
+                        if !isValid {
+                            Text(characterCount < 10 ? "Minimum 10 characters" : "Maximum 500 characters")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        } else {
+                            Text("Auto-saving...")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Text("\(characterCount) / 500")
+                            .font(.caption)
+                            .foregroundColor(isValid ? .secondary : .red)
+                    }
+                }
+            } else {
+                Text(keyPoint.content)
+                    .font(.body)
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
+            }
+        }
+        .padding()
+        .playgroundCard()
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(
+                    isEditing ? Color.accentColor : Color.clear,
+                    lineWidth: 2
+                )
+        )
+        .scaleEffect(isHovered && !isEditing ? 1.02 : 1.0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovered)
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isEditing)
+        .onHover { hovering in
+            if !isEditing {
+                isHovered = hovering
+            }
+        }
     }
 }
 
