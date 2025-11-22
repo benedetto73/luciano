@@ -28,11 +28,6 @@ protocol PowerPointExporterProtocol {
     func export(project: Project, to url: URL) async throws
 }
 
-// MARK: - Placeholder Types
-
-class ContentAnalysisViewModel {}
-class SlideGenerationViewModel {}
-
 /// Dependency Injection Container for the application
 /// Manages creation and lifecycle of all major components
 @MainActor
@@ -184,14 +179,20 @@ class DependencyContainer: ObservableObject {
         )
     }
     
-    func makeContentAnalysisViewModel(project: Project) -> ContentAnalysisViewModel {
-        // TODO: Implement in Phase 9 - Task 55
-        fatalError("ContentAnalysisViewModel not yet implemented - Phase 9, Task 55")
+    func makeContentAnalysisViewModel(projectID: UUID) -> ContentAnalysisViewModel {
+        ContentAnalysisViewModel(
+            projectID: projectID,
+            projectManager: projectManager,
+            appCoordinator: appCoordinator
+        )
     }
     
-    func makeSlideGenerationViewModel(project: Project) -> SlideGenerationViewModel {
-        // TODO: Implement in Phase 10 - Task 60
-        fatalError("SlideGenerationViewModel not yet implemented - Phase 10, Task 60")
+    func makeSlideGenerationViewModel(projectID: UUID) -> SlideGenerationViewModel {
+        SlideGenerationViewModel(
+            projectID: projectID,
+            projectManager: projectManager,
+            appCoordinator: appCoordinator
+        )
     }
 }
 

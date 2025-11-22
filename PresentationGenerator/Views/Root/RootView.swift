@@ -81,10 +81,14 @@ struct MainAppView: View {
             ContentImportView(
                 viewModel: dependencyContainer.makeContentImportViewModel(projectID: projectID)
             )
-        case .contentAnalysis:
-            Text("Content Analysis - To be implemented")
-        case .slideGeneration:
-            Text("Slide Generation - To be implemented")
+        case .contentAnalysis(let projectID):
+            ContentAnalysisView(
+                viewModel: dependencyContainer.makeContentAnalysisViewModel(projectID: projectID)
+            )
+        case .slideGeneration(let projectID):
+            SlideGenerationView(
+                viewModel: dependencyContainer.makeSlideGenerationViewModel(projectID: projectID)
+            )
         case .slideEditor(let projectID):
             SlideListView(
                 viewModel: dependencyContainer.makeSlideListViewModel(projectID: projectID)
