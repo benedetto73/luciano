@@ -109,6 +109,16 @@ class DependencyContainer: ObservableObject {
         PowerPointExporter(slideRenderer: slideRenderer)
     }()
     
+    lazy var projectManager: ProjectManager = {
+        ProjectManager(
+            projectRepository: projectRepository,
+            contentAnalyzer: contentAnalyzer,
+            slideDesigner: slideDesigner,
+            slideGenerator: slideGenerator,
+            powerPointExporter: powerPointExporter
+        )
+    }()
+    
     // MARK: - Coordinator
     
     lazy var appCoordinator: AppCoordinator = {
