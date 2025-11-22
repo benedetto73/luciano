@@ -104,7 +104,7 @@ class SlideGenerator: ObservableObject {
             Logger.shared.error("Slide generation failed", error: error, category: .business)
             throw error
         } catch {
-            let appError = AppError.unknownError(error.localizedDescription)
+            let appError = AppError.unknown(error.localizedDescription)
             lastError = appError
             Logger.shared.error("Slide generation failed", error: error, category: .business)
             throw appError
@@ -178,7 +178,7 @@ class SlideGenerator: ObservableObject {
             Logger.shared.error("Single slide generation failed", error: error, category: .business)
             throw error
         } catch {
-            let appError = AppError.unknownError(error.localizedDescription)
+            let appError = AppError.unknown(error.localizedDescription)
             lastError = appError
             throw appError
         }
@@ -239,7 +239,7 @@ class SlideGenerator: ObservableObject {
             Logger.shared.error("Slide regeneration failed", error: error, category: .business)
             throw error
         } catch {
-            let appError = AppError.unknownError(error.localizedDescription)
+            let appError = AppError.unknown(error.localizedDescription)
             lastError = appError
             throw appError
         }
@@ -279,7 +279,7 @@ class SlideGenerator: ObservableObject {
             Logger.shared.error("Image variation generation failed", error: error, category: .business)
             throw error
         } catch {
-            let appError = AppError.unknownError(error.localizedDescription)
+            let appError = AppError.unknown(error.localizedDescription)
             lastError = appError
             throw appError
         }

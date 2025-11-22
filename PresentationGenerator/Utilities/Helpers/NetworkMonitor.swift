@@ -100,13 +100,7 @@ extension NetworkMonitor {
     /// Throws an error if network is not available
     func requireNetworkConnection() throws {
         guard isConnected else {
-            throw AppError.networkError(
-                NSError(
-                    domain: "NetworkMonitor",
-                    code: -1009,
-                    userInfo: [NSLocalizedDescriptionKey: "No internet connection available"]
-                )
-            )
+            throw AppError.networkError("No internet connection available")
         }
     }
     

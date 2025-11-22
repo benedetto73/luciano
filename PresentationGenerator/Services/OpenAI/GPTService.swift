@@ -218,7 +218,7 @@ actor GPTService {
             }
         }
         
-        throw lastError ?? OpenAIError.unknownError("Retry failed")
+        throw lastError ?? OpenAIError.unknown("Retry failed")
     }
     
     /// Maps SDK errors to our OpenAIError type
@@ -259,7 +259,7 @@ actor GPTService {
             return .contentFiltered("Content policy violation")
         }
         
-        return .unknownError(error.localizedDescription)
+        return .unknown(error.localizedDescription)
     }
     
     // MARK: - Parsing Methods

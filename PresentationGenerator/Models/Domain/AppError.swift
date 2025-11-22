@@ -4,10 +4,14 @@ import Foundation
 enum AppError: LocalizedError {
     case apiKeyInvalid
     case apiKeyNotFound
-    case networkError(Error)
+    case invalidAPIKey(String)
+    case networkError(String)
+    case apiError(String)
     case openAIError(String)
     case fileImportError(Error)
     case exportError(Error)
+    case fileNotFound(String)
+    case fileSystemError(String)
     case contentFilterViolation(String)
     case projectNotFound(UUID)
     case projectSaveError(Error)
@@ -17,7 +21,8 @@ enum AppError: LocalizedError {
     case insufficientContent
     case generationCancelled
     case imageProcessingError(String)
-    case unknownError(String)
+    case rateLimitExceeded
+    case unknown(String)
     
     var errorDescription: String? {
         switch self {
@@ -25,14 +30,22 @@ enum AppError: LocalizedError {
             return "The OpenAI API key is invalid. Please check your key and try again."
         case .apiKeyNotFound:
             return "No API key found. Please enter your OpenAI API key in settings."
-        case .networkError(let error):
-            return "Network error occurred: \(error.localizedDescription)"
+        case .invalidAPIKey(let message):
+            return "Invalid API key: \(message)"
+        case .networkError(let message):
+            return "Network error occurred: \(message)"
+        case .apiError(let message):
+            return "API error: \(message)"
         case .openAIError(let message):
             return "OpenAI API error: \(message)"
         case .fileImportError(let error):
             return "Failed to import file: \(error.localizedDescription)"
         case .exportError(let error):
             return "Failed to export presentation: \(error.localizedDescription)"
+        case .fileNotFound(let path):
+            return "File not found: \(path)"
+        case .fileSystemError(let message):
+            return "File system error: \(message)"
         case .contentFilterViolation(let reason):
             return "Content filter violation: \(reason)"
         case .projectNotFound(let id):
@@ -51,23 +64,27 @@ enum AppError: LocalizedError {
             return "Slide generation was cancelled."
         case .imageProcessingError(let message):
             return "Image processing error: \(message)"
-        case .unknownError(let message):
+        case .rateLimitExceeded:
+            return "API rate limit exceeded. Please wait before trying again."
+        case .unknown(let message):
             return "An unknown error occurred: \(message)"
         }
     }
     
     var recoverySuggestion: String? {
         switch self {
-        case .apiKeyInvalid, .apiKeyNotFound:
+        case .apiKeyInvalid, .apiKeyNotFound, .invalidAPIKey:
             return "Go to Settings and enter a valid OpenAI API key."
         case .networkError:
             return "Check your internet connection and try again."
-        case .openAIError:
+        case .apiError, .openAIError:
             return "This might be a temporary issue with OpenAI's service. Please try again later."
-        case .fileImportError:
-            return "Make sure the file is not corrupted and is a supported format (.doc, .docx)."
+        case .fileImportError, .fileNotFound:
+            return "Make sure the file exists and is not corrupted."
         case .exportError:
             return "Check that you have write permissions to the destination folder."
+        case .fileSystemError:
+            return "Check available disk space and file permissions."
         case .contentFilterViolation:
             return "Please review your content to ensure it's appropriate."
         case .projectNotFound:
@@ -84,7 +101,9 @@ enum AppError: LocalizedError {
             return "You can restart the generation process when ready."
         case .imageProcessingError:
             return "Try regenerating the image or uploading a custom one."
-        case .unknownError:
+        case .rateLimitExceeded:
+            return "Wait a few minutes before making more requests."
+        case .unknown:
             return "Please try again or contact support if the issue persists."
         }
     }
@@ -95,14 +114,22 @@ enum AppError: LocalizedError {
             return "The provided API key was rejected by OpenAI."
         case .apiKeyNotFound:
             return "No API key has been stored in the system."
+        case .invalidAPIKey:
+            return "The API key format is invalid."
         case .networkError:
             return "Unable to connect to the server."
+        case .apiError:
+            return "The API service returned an error."
         case .openAIError:
             return "The OpenAI service returned an error."
         case .fileImportError:
             return "The file could not be read or parsed."
         case .exportError:
             return "The PowerPoint file could not be created."
+        case .fileNotFound:
+            return "The specified file does not exist."
+        case .fileSystemError:
+            return "A file system operation failed."
         case .contentFilterViolation:
             return "The content did not pass the appropriateness filter."
         case .projectNotFound:
@@ -121,7 +148,9 @@ enum AppError: LocalizedError {
             return "User cancelled the operation."
         case .imageProcessingError:
             return "The image could not be processed."
-        case .unknownError:
+        case .rateLimitExceeded:
+            return "Too many requests in a short period."
+        case .unknown:
             return "An unexpected error occurred."
         }
     }

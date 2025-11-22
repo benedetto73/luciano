@@ -82,7 +82,7 @@ class ContentAnalyzer: ObservableObject {
             Logger.shared.error("Analysis failed", error: error, category: .business)
             throw error
         } catch {
-            let appError = AppError.unknownError(error.localizedDescription)
+            let appError = AppError.unknown(error.localizedDescription)
             lastError = appError
             Logger.shared.error("Analysis failed with unknown error", error: error, category: .business)
             throw appError
@@ -135,7 +135,7 @@ class ContentAnalyzer: ObservableObject {
             Logger.shared.error("Text analysis failed", error: error, category: .business)
             throw error
         } catch {
-            let appError = AppError.unknownError(error.localizedDescription)
+            let appError = AppError.unknown(error.localizedDescription)
             lastError = appError
             throw appError
         }

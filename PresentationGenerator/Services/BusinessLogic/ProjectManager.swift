@@ -191,7 +191,7 @@ class ProjectManager: ObservableObject {
             return result
             
         } catch {
-            let appError = error as? AppError ?? AppError.unknownError(error.localizedDescription)
+            let appError = error as? AppError ?? AppError.unknown(error.localizedDescription)
             lastError = appError
             Logger.shared.error("Content analysis failed", error: error, category: .business)
             throw appError
@@ -223,7 +223,7 @@ class ProjectManager: ObservableObject {
             return slides
             
         } catch {
-            let appError = error as? AppError ?? AppError.unknownError(error.localizedDescription)
+            let appError = error as? AppError ?? AppError.unknown(error.localizedDescription)
             lastError = appError
             Logger.shared.error("Slide generation failed", error: error, category: .business)
             throw appError
@@ -269,7 +269,7 @@ class ProjectManager: ObservableObject {
             return updatedProject
             
         } catch {
-            let appError = error as? AppError ?? AppError.unknownError(error.localizedDescription)
+            let appError = error as? AppError ?? AppError.unknown(error.localizedDescription)
             lastError = appError
             Logger.shared.error("Presentation generation failed", error: error, category: .business)
             throw appError

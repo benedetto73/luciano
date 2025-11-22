@@ -19,7 +19,6 @@ enum OpenAIError: LocalizedError {
     case imageProcessingError(String) // Added for image processing
     case textGenerationFailed(String)
     case unknown(String)
-    case unknownError(String) // Alias for 'unknown'
     
     var errorDescription: String? {
         switch self {
@@ -57,7 +56,7 @@ enum OpenAIError: LocalizedError {
             return "Text generation failed: \(reason)"
         case .unknown(let message):
             return "Unknown OpenAI error: \(message)"
-        case .unknownError(let message):
+        case .unknown(let message):
             return "Unknown error: \(message)"
         }
     }
@@ -86,7 +85,7 @@ enum OpenAIError: LocalizedError {
             return "This might be a temporary issue. Please try again."
         case .imageGenerationFailed, .imageProcessingError, .textGenerationFailed:
             return "Try regenerating with a different prompt or parameters."
-        case .unknown, .unknownError:
+        case .unknown:
             return "Please try again or contact support if the issue persists."
         }
     }
@@ -119,7 +118,7 @@ enum OpenAIError: LocalizedError {
             return "DALL-E could not generate the requested image"
         case .textGenerationFailed:
             return "GPT could not generate the requested text"
-        case .unknown, .unknownError:
+        case .unknown:
             return "An unexpected error occurred"
         }
     }

@@ -402,7 +402,7 @@ class PowerPointExporter: ObservableObject, PowerPointExporterProtocol {
         guard process.terminationStatus == 0 else {
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
             let output = String(data: data, encoding: .utf8) ?? "Unknown error"
-            throw AppError.unknownError("ZIP creation failed: \(output)")
+            throw AppError.unknown("ZIP creation failed: \(output)")
         }
     }
     

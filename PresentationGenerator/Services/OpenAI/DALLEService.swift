@@ -280,7 +280,7 @@ actor DALLEService {
             }
         }
         
-        throw lastError ?? OpenAIError.unknownError("Retry failed")
+        throw lastError ?? OpenAIError.unknown("Retry failed")
     }
     
     /// Maps SDK errors to our OpenAIError type
@@ -321,7 +321,7 @@ actor DALLEService {
             return .insufficientQuota
         }
         
-        return .unknownError(error.localizedDescription)
+        return .unknown(error.localizedDescription)
     }
 }
 

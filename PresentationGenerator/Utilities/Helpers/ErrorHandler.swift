@@ -51,7 +51,7 @@ class ErrorHandler: ObservableObject {
             Logger.shared.error(message, category: .error)
             
             if shouldDisplay {
-                currentError = .unknownError(message)
+                currentError = .unknown(message)
                 showingError = true
             }
         }
@@ -103,7 +103,7 @@ class ErrorHandler: ObservableObject {
         
         // Check for specific error types
         if let keychainError = error as? KeychainError {
-            return .unknownError("Keychain error: \(keychainError.localizedDescription)")
+            return .unknown("Keychain error: \(keychainError.localizedDescription)")
         }
         
         if let openAIError = error as? OpenAIError {
@@ -117,21 +117,21 @@ class ErrorHandler: ObservableObject {
         }
         
         // Default to unknown error
-        return .unknownError(error.localizedDescription)
+        return .unknown(error.localizedDescription)
     }
     
     private func handleURLError(_ error: NSError) -> AppError {
         switch error.code {
         case NSURLErrorNotConnectedToInternet,
              NSURLErrorNetworkConnectionLost:
-            return .networkError(error)
+            return .networkError(error.localizedDescription)
         case NSURLErrorTimedOut:
-            return .networkError(error)
+            return .networkError(error.localizedDescription)
         case NSURLErrorCannotFindHost,
              NSURLErrorCannotConnectToHost:
-            return .networkError(error)
+            return .networkError(error.localizedDescription)
         default:
-            return .networkError(error)
+            return .networkError(error.localizedDescription)
         }
     }
     
@@ -172,7 +172,7 @@ class ErrorHandler: ObservableObject {
         if let error = lastError {
             throw error
         } else {
-            throw AppError.unknownError("Operation failed after \(maxAttempts) attempts")
+            throw AppError.unknown("Operation failed after \(maxAttempts) attempts")
         }
     }
 }

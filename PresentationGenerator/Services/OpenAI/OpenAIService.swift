@@ -65,7 +65,7 @@ class OpenAIService: OpenAIServiceProtocol, ObservableObject {
             Logger.shared.error("Content analysis failed", error: error, category: .api)
             throw error
         } catch {
-            let mappedError = OpenAIError.unknownError(error.localizedDescription)
+            let mappedError = OpenAIError.unknown(error.localizedDescription)
             lastError = mappedError
             throw mappedError
         }
@@ -125,7 +125,7 @@ class OpenAIService: OpenAIServiceProtocol, ObservableObject {
             Logger.shared.error("Slide generation failed", error: error, category: .api)
             throw error
         } catch {
-            let mappedError = OpenAIError.unknownError(error.localizedDescription)
+            let mappedError = OpenAIError.unknown(error.localizedDescription)
             lastError = mappedError
             throw mappedError
         }
@@ -210,7 +210,7 @@ class OpenAIService: OpenAIServiceProtocol, ObservableObject {
             Logger.shared.error("Image generation failed", error: error, category: .api)
             throw error
         } catch {
-            let mappedError = OpenAIError.unknownError(error.localizedDescription)
+            let mappedError = OpenAIError.unknown(error.localizedDescription)
             lastError = mappedError
             throw mappedError
         }
@@ -247,7 +247,7 @@ class OpenAIService: OpenAIServiceProtocol, ObservableObject {
             Logger.shared.error("Image variations generation failed", error: error, category: .api)
             throw error
         } catch {
-            let mappedError = OpenAIError.unknownError(error.localizedDescription)
+            let mappedError = OpenAIError.unknown(error.localizedDescription)
             lastError = mappedError
             throw mappedError
         }
@@ -289,7 +289,7 @@ class OpenAIService: OpenAIServiceProtocol, ObservableObject {
             
             throw error
         } catch {
-            throw OpenAIError.unknownError(error.localizedDescription)
+            throw OpenAIError.unknown(error.localizedDescription)
         }
     }
 }
