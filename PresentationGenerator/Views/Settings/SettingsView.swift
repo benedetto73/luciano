@@ -61,14 +61,28 @@ struct SettingsView: View {
                 HStack {
                     Text("Version")
                     Spacer()
-                    Text("1.0.0")
+                    Text(AppInfo.version)
                         .foregroundColor(.secondary)
                 }
                 
                 HStack {
                     Text("Build")
                     Spacer()
-                    Text("2025.11.22")
+                    Text(AppInfo.build)
+                        .foregroundColor(.secondary)
+                }
+                
+                HStack {
+                    Text("Bundle ID")
+                    Spacer()
+                    Text(AppInfo.bundleIdentifier)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(AppInfo.copyright)
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
