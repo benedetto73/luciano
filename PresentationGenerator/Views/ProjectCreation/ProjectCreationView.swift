@@ -13,14 +13,14 @@ struct ProjectCreationView: View {
     
     var body: some View {
         Form {
-            Section("Project Details") {
-                TextField("Project Name", text: $viewModel.projectName)
+            Section("projectCreation.projectName".localized) {
+                TextField("projectCreation.projectName".localized, text: $viewModel.projectName)
                     .focused($isNameFieldFocused)
                     .textFieldStyle(.roundedBorder)
             }
             
-            Section("Target Audience") {
-                Picker("Audience", selection: $viewModel.selectedAudience) {
+            Section("projectCreation.targetAudience".localized) {
+                Picker("projectCreation.audience".localized, selection: $viewModel.selectedAudience) {
                     ForEach(Audience.allCases, id: \.self) { audience in
                         Text(audience.rawValue).tag(audience)
                     }
@@ -42,7 +42,7 @@ struct ProjectCreationView: View {
                             ProgressView()
                                 .controlSize(.small)
                         } else {
-                            Text("Create Project")
+                            Text("projectCreation.create".localized)
                         }
                         Spacer()
                     }
@@ -51,17 +51,17 @@ struct ProjectCreationView: View {
                 .buttonStyle(.borderedProminent)
             }
         }
-        .navigationTitle("New Presentation")
+        .navigationTitle("projectCreation.title".localized)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel", action: viewModel.cancel)
+                Button("cancel".localized, action: viewModel.cancel)
             }
         }
         .onAppear {
             isNameFieldFocused = true
         }
-        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-            Button("OK") {
+        .alert("error".localized, isPresented: .constant(viewModel.errorMessage != nil)) {
+            Button("ok".localized) {
                 viewModel.errorMessage = nil
             }
         } message: {
@@ -77,11 +77,11 @@ struct ProjectCreationView: View {
     private var audienceDescription: some View {
         switch viewModel.selectedAudience {
         case .kids:
-            Label("Simple language, bright colors, large fonts", systemImage: "sparkles")
+            Label("projectCreation.kids.description".localized, systemImage: "sparkles")
                 .font(.caption)
                 .foregroundColor(.secondary)
         case .adults:
-            Label("Professional style, detailed content", systemImage: "briefcase")
+            Label("projectCreation.adults.description".localized, systemImage: "briefcase")
                 .font(.caption)
                 .foregroundColor(.secondary)
         }

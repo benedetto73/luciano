@@ -12,13 +12,35 @@ struct SettingsView: View {
     @State private var showingAPIKeyInput = false
     @State private var newAPIKey = ""
     @State private var showingClearConfirmation = false
+    @State private var selectedLanguage: LocalizationHelper.SupportedLanguage = LocalizationHelper.currentLanguage
     
     var body: some View {
         Form {
-            Section("OpenAI Configuration") {
+            // Language Section
+            Section("settings.language".localized) {
+                Picker("settings.language".localized, selection: $selectedLanguage) {
+                    ForEach(LocalizationHelper.SupportedLanguage.allCases, id: \.self) { language in
+                        HStack {
+                            Text(language.flag)
+                            Text(language.displayName)
+                        }
+                        .tag(language)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .onChange(of: selectedLanguage) { newLanguage in
+                    LocalizationHelper.currentLanguage = newLanguage
+                }
+                
+                Text("settings.language.description".localized)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Section("settings.openai.title".localized) {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("API Key")
+                        Text("settings.apiKey".localized)
                             .fontWeight(.medium)
                         Spacer()
                         if !viewModel.apiKey.isEmpty {
@@ -26,19 +48,19 @@ struct SettingsView: View {
                                 .font(.system(.body, design: .monospaced))
                                 .foregroundColor(.secondary)
                         } else {
-                            Text("Not configured")
+                            Text("settings.apiKey.notConfigured".localized)
                                 .foregroundColor(.secondary)
                         }
                     }
                     
                     HStack {
-                        Button("Update API Key") {
+                        Button("settings.apiKey.update".localized) {
                             showingAPIKeyInput = true
                         }
                         .buttonStyle(.bordered)
                         
                         if !viewModel.apiKey.isEmpty {
-                            Button("Clear", role: .destructive) {
+                            Button("settings.apiKey.clear".localized, role: .destructive) {
                                 showingClearConfirmation = true
                             }
                             .buttonStyle(.bordered)
@@ -47,33 +69,33 @@ struct SettingsView: View {
                 }
                 .padding(.vertical, 4)
                 
-                Toggle("Use Free Models", isOn: $viewModel.isUsingFreeModels)
+                Toggle("settings.freeModels".localized, isOn: $viewModel.isUsingFreeModels)
                     .onChange(of: viewModel.isUsingFreeModels) { newValue in
                         viewModel.toggleFreeModels(newValue)
                     }
                 
-                Text("When enabled, uses free GPT-3.5 models. When disabled, uses premium GPT-4 models (requires API key).")
+                Text("settings.freeModels.description".localized)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             
-            Section("About") {
+            Section("settings.about".localized) {
                 HStack {
-                    Text("Version")
+                    Text("settings.version".localized)
                     Spacer()
                     Text(AppInfo.version)
                         .foregroundColor(.secondary)
                 }
                 
                 HStack {
-                    Text("Build")
+                    Text("settings.build".localized)
                     Spacer()
                     Text(AppInfo.build)
                         .foregroundColor(.secondary)
                 }
                 
                 HStack {
-                    Text("Bundle ID")
+                    Text("settings.bundleId".localized)
                     Spacer()
                     Text(AppInfo.bundleIdentifier)
                         .font(.caption)
@@ -87,10 +109,10 @@ struct SettingsView: View {
                 }
             }
             
-            Section("Support") {
+            Section("settings.support".localized) {
                 Link(destination: URL(string: "https://github.com/yourusername/presentation-generator")!) {
                     HStack {
-                        Label("GitHub Repository", systemImage: "link")
+                        Label("settings.github".localized, systemImage: "link")
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .foregroundColor(.secondary)
@@ -99,7 +121,7 @@ struct SettingsView: View {
                 
                 Link(destination: URL(string: "https://platform.openai.com/docs")!) {
                     HStack {
-                        Label("OpenAI Documentation", systemImage: "book")
+                        Label("settings.openai".localized, systemImage: "book")
                         Spacer()
                         Image(systemName: "arrow.up.right.square")
                             .foregroundColor(.secondary)
@@ -108,10 +130,10 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .navigationTitle("Settings")
+        .navigationTitle("settings.title".localized)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button("Done") {
+                Button("done".localized) {
                     viewModel.close()
                 }
             }
@@ -140,18 +162,18 @@ struct SettingsView: View {
                 }
             )
         }
-        .alert("Clear API Key", isPresented: $showingClearConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Clear", role: .destructive) {
+        .alert("settings.apiKey.clearConfirm.title".localized, isPresented: $showingClearConfirmation) {
+            Button("cancel".localized, role: .cancel) {}
+            Button("settings.apiKey.clear".localized, role: .destructive) {
                 Task {
                     await viewModel.clearAPIKey()
                 }
             }
         } message: {
-            Text("Are you sure you want to remove your API key? You'll need to enter it again to use premium models.")
+            Text("settings.apiKey.clearConfirm.message".localized)
         }
-        .alert("Success", isPresented: .constant(viewModel.successMessage != nil)) {
-            Button("OK") {
+        .alert("success".localized, isPresented: .constant(viewModel.successMessage != nil)) {
+            Button("ok".localized) {
                 viewModel.successMessage = nil
             }
         } message: {
@@ -159,8 +181,8 @@ struct SettingsView: View {
                 Text(message)
             }
         }
-        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-            Button("OK") {
+        .alert("error".localized, isPresented: .constant(viewModel.errorMessage != nil)) {
+            Button("ok".localized) {
                 viewModel.errorMessage = nil
             }
         } message: {
@@ -179,16 +201,16 @@ struct APIKeyInputSheet: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Enter OpenAI API Key")
+            Text("settings.apiKey.input.title".localized)
                 .font(.title2)
                 .fontWeight(.semibold)
             
-            Text("Your API key will be validated with OpenAI and stored securely")
+            Text("settings.apiKey.input.subtitle".localized)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
             
-            SecureField("sk-...", text: $apiKey)
+            SecureField("settings.apiKey.input.placeholder".localized, text: $apiKey)
                 .textFieldStyle(.roundedBorder)
                 .font(.system(.body, design: .monospaced))
                 .padding(.horizontal)
@@ -198,20 +220,20 @@ struct APIKeyInputSheet: View {
                 HStack(spacing: 8) {
                     ProgressView()
                         .scaleEffect(0.8)
-                    Text("Validating API key...")
+                    Text("settings.apiKey.validating".localized)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
             
             HStack(spacing: 12) {
-                Button("Cancel") {
+                Button("cancel".localized) {
                     onCancel()
                 }
                 .buttonStyle(.bordered)
                 .disabled(viewModel.isValidating)
                 
-                Button("Save") {
+                Button("save".localized) {
                     onSave()
                 }
                 .buttonStyle(.borderedProminent)

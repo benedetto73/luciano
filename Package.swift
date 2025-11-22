@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "PresentationGenerator",
-    defaultLocalization: "en",
+    defaultLocalization: "it",
     platforms: [
         .macOS(.v13)
     ],

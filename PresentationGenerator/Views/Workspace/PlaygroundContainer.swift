@@ -68,11 +68,11 @@ struct WelcomePlayground: View {
                 ))
             
             VStack(spacing: 12) {
-                Text("Welcome to Presentation Generator")
+                Text("workspace.welcome.title".localized)
                     .font(.largeTitle)
                     .fontWeight(.bold)
                 
-                Text("Start by importing your source files")
+                Text("workspace.welcome.subtitle".localized)
                     .font(.title3)
                     .foregroundColor(.secondary)
             }
@@ -80,7 +80,7 @@ struct WelcomePlayground: View {
             Button {
                 viewModel.selectedPhase = .importPhase
             } label: {
-                Label("Import Content", systemImage: "doc.badge.plus")
+                Label("workspace.welcome.button".localized, systemImage: "doc.badge.plus")
                     .font(.headline)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
@@ -105,8 +105,8 @@ struct ImportPlayground: View {
             VStack(spacing: 24) {
                 // Header
                 PlaygroundHeader(
-                    title: "Import Content",
-                    subtitle: "Add source files to generate your presentation",
+                    title: "import.title".localized,
+                    subtitle: "import.subtitle".localized,
                     icon: "doc.badge.plus"
                 )
                 
@@ -119,16 +119,16 @@ struct ImportPlayground: View {
                             .foregroundColor(isDragging ? .accentColor : .secondary)
                         
                         VStack(spacing: 8) {
-                            Text("Drop files here")
+                            Text("import.dropZone.title".localized)
                                 .font(.title2)
                                 .fontWeight(.semibold)
                             
-                            Text("or click to browse")
+                            Text("import.dropZone.subtitle".localized)
                                 .font(.body)
                                 .foregroundColor(.secondary)
                         }
                         
-                        Text("Supports PDF, TXT, DOC, DOCX, and images")
+                        Text("import.dropZone.formats".localized)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }

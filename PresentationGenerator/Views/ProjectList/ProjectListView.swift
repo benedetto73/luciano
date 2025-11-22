@@ -25,39 +25,39 @@ struct ProjectListView: View {
                     ProgressView()
                 }
             }
-            .navigationTitle("My Presentations")
+            .navigationTitle("projectList.title".localized)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: viewModel.createNewProject) {
-                        Label("New Project", systemImage: "plus")
+                        Label("projectList.newProject".localized, systemImage: "plus")
                     }
                 }
                 
                 ToolbarItem(placement: .automatic) {
                     Button(action: viewModel.openSettings) {
-                        Label("Settings", systemImage: "gear")
+                        Label("projectList.settings".localized, systemImage: "gear")
                     }
                 }
             }
-            .searchable(text: $viewModel.searchText, prompt: "Search projects")
+            .searchable(text: $viewModel.searchText, prompt: Text("projectList.search".localized))
             .task {
                 await viewModel.loadProjects()
             }
             .refreshable {
                 await viewModel.refresh()
             }
-            .alert("Delete Project", isPresented: $showingDeleteAlert, presenting: projectToDelete) { project in
-                Button("Cancel", role: .cancel) {}
-                Button("Delete", role: .destructive) {
+            .alert("projectList.deleteConfirm.title".localized, isPresented: $showingDeleteAlert, presenting: projectToDelete) { project in
+                Button("cancel".localized, role: .cancel) {}
+                Button("delete".localized, role: .destructive) {
                     Task {
                         await viewModel.deleteProject(project)
                     }
                 }
             } message: { project in
-                Text("Are you sure you want to delete '\(project.name)'? This action cannot be undone.")
+                Text(String(format: "projectList.deleteConfirm.message".localized, project.name))
             }
-            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-                Button("OK") {
+            .alert("error".localized, isPresented: .constant(viewModel.errorMessage != nil)) {
+                Button("ok".localized) {
                     viewModel.errorMessage = nil
                 }
             } message: {
@@ -76,16 +76,16 @@ struct ProjectListView: View {
                 .font(.system(size: 60))
                 .foregroundColor(.secondary)
             
-            Text("No Presentations Yet")
+            Text("projectList.empty.title".localized)
                 .font(.title2)
                 .fontWeight(.semibold)
             
-            Text("Create your first presentation to get started")
+            Text("projectList.empty.message".localized)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
             
             Button(action: viewModel.createNewProject) {
-                Label("Create Presentation", systemImage: "plus.circle.fill")
+                Label("projectList.empty.button".localized, systemImage: "plus.circle.fill")
                     .font(.headline)
             }
             .buttonStyle(.borderedProminent)
@@ -107,7 +107,7 @@ struct ProjectListView: View {
                             projectToDelete = project
                             showingDeleteAlert = true
                         } label: {
-                            Label("Delete", systemImage: "trash")
+                            Label("delete".localized, systemImage: "trash")
                         }
                     }
             }

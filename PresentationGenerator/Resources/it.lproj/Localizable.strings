@@ -1,0 +1,226 @@
+/* 
+   Localizable.strings (Italiano)
+   PresentationGenerator
+*/
+
+// MARK: - Generale
+"app.name" = "Generatore Presentazioni";
+"ok" = "OK";
+"cancel" = "Annulla";
+"done" = "Fatto";
+"delete" = "Elimina";
+"save" = "Salva";
+"close" = "Chiudi";
+"error" = "Errore";
+"success" = "Successo";
+"loading" = "Caricamento";
+"refresh" = "Aggiorna";
+"retry" = "Riprova";
+"dismiss" = "Chiudi";
+
+// MARK: - Elenco Progetti
+"projectList.title" = "Le Mie Presentazioni";
+"projectList.newProject" = "Nuovo Progetto";
+"projectList.settings" = "Impostazioni";
+"projectList.search" = "Cerca progetti";
+"projectList.empty.title" = "Nessuna Presentazione";
+"projectList.empty.message" = "Crea la tua prima presentazione per iniziare";
+"projectList.empty.button" = "Crea Presentazione";
+"projectList.deleteConfirm.title" = "Elimina Progetto";
+"projectList.deleteConfirm.message" = "Sei sicuro di voler eliminare '%@'? Questa azione non può essere annullata.";
+"projectList.sort.modifiedDate" = "Data Modifica";
+"projectList.sort.createdDate" = "Data Creazione";
+"projectList.sort.name" = "Nome";
+
+// MARK: - Creazione Progetto
+"projectCreation.title" = "Nuova Presentazione";
+"projectCreation.projectName" = "Nome Progetto";
+"projectCreation.targetAudience" = "Pubblico di Destinazione";
+"projectCreation.audience" = "Pubblico";
+"projectCreation.create" = "Crea Progetto";
+"projectCreation.kids.description" = "Linguaggio semplice, colori vivaci, caratteri grandi";
+"projectCreation.adults.description" = "Stile professionale, contenuto dettagliato";
+
+// MARK: - Dettaglio Progetto / Area di Lavoro
+"projectDetail.workflow" = "Flusso di Lavoro";
+"projectDetail.modified" = "Modificato %@";
+"projectDetail.step1.title" = "Importa Contenuto";
+"projectDetail.step1.description" = "%d file sorgente";
+"projectDetail.step2.title" = "Analizza Contenuto";
+"projectDetail.step2.description" = "Estrai punti chiave";
+"projectDetail.step3.title" = "Genera Slide";
+"projectDetail.step3.description" = "Crea slide della presentazione";
+"projectDetail.step4.title" = "Esporta";
+"projectDetail.step4.description" = "Esporta in PowerPoint";
+
+// MARK: - Fasi Area di Lavoro
+"workspace.welcome.title" = "Benvenuto in Generatore Presentazioni";
+"workspace.welcome.subtitle" = "Inizia importando i tuoi file sorgente";
+"workspace.welcome.button" = "Importa Contenuto";
+
+// MARK: - Fase Importazione
+"import.title" = "Importa Contenuto";
+"import.subtitle" = "Aggiungi file sorgente per generare la presentazione";
+"import.dropZone.title" = "Trascina i file qui";
+"import.dropZone.subtitle" = "o clicca per sfogliare";
+"import.dropZone.formats" = "Supporta PDF, TXT, DOC, DOCX e immagini";
+"import.fileList.title" = "File Importati";
+"import.fileList.empty" = "Nessun file importato";
+"import.addFiles" = "Aggiungi File";
+"import.removeFile" = "Rimuovi";
+"import.nextStep" = "Procedi all'Analisi";
+
+// MARK: - Fase Analisi
+"analyze.title" = "Analizza Contenuto";
+"analyze.subtitle" = "Rivedi e modifica i punti chiave";
+"analyze.keyPoints.title" = "Punti Chiave";
+"analyze.keyPoints.empty" = "Nessun punto chiave";
+"analyze.keyPoints.add" = "Aggiungi Punto Chiave";
+"analyze.startAnalysis" = "Inizia Analisi";
+"analyze.reanalyze" = "Ri-analizza Contenuto";
+"analyze.analyzing" = "Analisi in corso...";
+"analyze.edit.save" = "Salva";
+"analyze.edit.cancel" = "Annulla";
+"analyze.edit.placeholder" = "Inserisci punto chiave...";
+"analyze.edit.validation" = "10-500 caratteri";
+
+// MARK: - Fase Generazione
+"generate.title" = "Genera Slide";
+"generate.subtitle" = "Crea slide della presentazione dai punti chiave";
+"generate.preview.title" = "Anteprima";
+"generate.preview.empty" = "Nessuna slide generata";
+"generate.startGeneration" = "Genera Slide";
+"generate.regenerate" = "Rigenera";
+"generate.generating" = "Generazione slide in corso...";
+"generate.progress" = "Generazione slide %d di %d";
+
+// MARK: - Fase Modifica
+"edit.title" = "Modifica Slide";
+"edit.subtitle" = "Personalizza la tua presentazione";
+"edit.slideList.title" = "Slide";
+"edit.slideList.empty" = "Nessuna slide da modificare";
+"edit.slideNumber" = "Slide %d";
+"edit.editSlide" = "Modifica Slide";
+"edit.deleteSlide" = "Elimina Slide";
+"edit.addSlide" = "Aggiungi Slide";
+"edit.reorderHint" = "Trascina per riordinare";
+
+// MARK: - Fase Anteprima
+"preview.title" = "Anteprima";
+"preview.subtitle" = "Rivedi la tua presentazione";
+"preview.slideCount" = "%d slide";
+"preview.empty" = "Nessuna slide da visualizzare";
+"preview.fullscreen" = "Schermo Intero";
+"preview.previous" = "Precedente";
+"preview.next" = "Successiva";
+
+// MARK: - Fase Esportazione
+"export.title" = "Esporta";
+"export.subtitle" = "Esporta la presentazione in PowerPoint";
+"export.format" = "Formato";
+"export.quality" = "Qualità";
+"export.filename" = "Nome File";
+"export.startExport" = "Esporta in PowerPoint";
+"export.exporting" = "Esportazione in corso...";
+"export.success.title" = "Esportazione Completata";
+"export.success.message" = "La tua presentazione è stata esportata con successo";
+"export.openFile" = "Apri File";
+"export.showInFinder" = "Mostra nel Finder";
+
+// MARK: - Impostazioni
+"settings.title" = "Impostazioni";
+"settings.openai.title" = "Configurazione OpenAI";
+"settings.apiKey" = "Chiave API";
+"settings.apiKey.notConfigured" = "Non configurata";
+"settings.apiKey.update" = "Aggiorna Chiave API";
+"settings.apiKey.clear" = "Cancella";
+"settings.apiKey.clearConfirm.title" = "Cancella Chiave API";
+"settings.apiKey.clearConfirm.message" = "Sei sicuro di voler rimuovere la chiave API? Dovrai inserirla nuovamente per usare i modelli premium.";
+"settings.apiKey.input.title" = "Inserisci Chiave API OpenAI";
+"settings.apiKey.input.subtitle" = "La tua chiave API sarà validata con OpenAI e salvata in modo sicuro";
+"settings.apiKey.input.placeholder" = "sk-...";
+"settings.apiKey.validating" = "Validazione chiave API...";
+"settings.freeModels" = "Usa Modelli Gratuiti";
+"settings.freeModels.description" = "Quando abilitato, usa modelli GPT-3.5 gratuiti. Quando disabilitato, usa modelli GPT-4 premium (richiede chiave API).";
+"settings.language" = "Lingua";
+"settings.language.description" = "Scegli la lingua preferita per l'interfaccia dell'app";
+"settings.about" = "Informazioni";
+"settings.version" = "Versione";
+"settings.build" = "Build";
+"settings.bundleId" = "ID Bundle";
+"settings.support" = "Supporto";
+"settings.github" = "Repository GitHub";
+"settings.openai" = "Documentazione OpenAI";
+
+// MARK: - Scorciatoie da Tastiera
+"shortcuts.title" = "Scorciatoie da Tastiera";
+"shortcuts.phases" = "Cambia tra le fasi";
+"shortcuts.newProject" = "Nuovo progetto";
+"shortcuts.import" = "Vai alla fase Importa";
+"shortcuts.generate" = "Genera slide";
+"shortcuts.export" = "Vai alla fase Esporta";
+"shortcuts.settings" = "Impostazioni";
+"shortcuts.showShortcuts" = "Mostra scorciatoie";
+"shortcuts.closeHint" = "Premi ESC o clicca fuori per chiudere";
+
+// MARK: - Barra di Stato
+"status.sourceFiles" = "File Sorgente";
+"status.keyPoints" = "Punti Chiave";
+"status.slides" = "Slide";
+"status.settings.tooltip" = "Impostazioni (⌘,)";
+"status.settings.warning" = "Chiave API non configurata";
+
+// MARK: - Pubblico
+"audience.kids" = "Bambini";
+"audience.adults" = "Adulti";
+"audience.business" = "Business";
+"audience.academic" = "Accademico";
+
+// MARK: - Errori
+"error.generic" = "Si è verificato un errore";
+"error.fileAccess" = "Impossibile accedere al file";
+"error.fileTooLarge" = "File troppo grande (max 50MB)";
+"error.invalidFormat" = "Formato file non supportato";
+"error.apiKey.missing" = "La chiave API è richiesta per i modelli premium";
+"error.apiKey.invalid" = "Formato chiave API non valido";
+"error.validation.failed" = "Validazione fallita";
+"error.network" = "Errore di rete";
+"error.projectNotFound" = "Progetto non trovato";
+
+// MARK: - Messaggi di Caricamento
+"loading.analyzing" = "Analisi Contenuto";
+"loading.generating" = "Generazione Slide";
+"loading.exporting" = "Esportazione Presentazione";
+"loading.importing" = "Importazione File";
+
+// MARK: - Nomi Fasi
+"phase.import" = "Importa";
+"phase.analyze" = "Analizza";
+"phase.generate" = "Genera";
+"phase.edit" = "Modifica";
+"phase.preview" = "Anteprima";
+"phase.export" = "Esporta";
+
+// MARK: - Importazione File
+"fileImport.addFiles" = "Aggiungi File";
+"fileImport.dropHere" = "Trascina i file qui";
+"fileImport.supportedFormats" = "Supporta PDF, TXT, DOC, DOCX e immagini";
+"fileImport.processing" = "Elaborazione file...";
+
+// MARK: - Analisi Contenuto
+"analysis.extracting" = "Estrazione punti chiave...";
+"analysis.complete" = "Analisi completata";
+"analysis.failed" = "Analisi fallita";
+
+// MARK: - Generazione Slide
+"generation.creating" = "Creazione slide...";
+"generation.complete" = "Generazione completata";
+"generation.failed" = "Generazione fallita";
+
+// MARK: - Messaggi Toast
+"toast.fileSaved" = "File salvato con successo";
+"toast.projectDeleted" = "Progetto eliminato";
+"toast.slideAdded" = "Slide aggiunta";
+"toast.slideDeleted" = "Slide eliminata";
+"toast.apiKeyUpdated" = "Chiave API aggiornata con successo";
+"toast.apiKeyCleared" = "Chiave API cancellata";
