@@ -77,6 +77,10 @@ struct MainAppView: View {
             ProjectDetailView(
                 viewModel: dependencyContainer.makeProjectDetailViewModel(projectID: projectID)
             )
+        case .workspace(let projectID):
+            WorkspaceView(
+                viewModel: dependencyContainer.makeProjectDetailViewModel(projectID: projectID)
+            )
         case .contentImport(let projectID):
             ContentImportView(
                 viewModel: dependencyContainer.makeContentImportViewModel(projectID: projectID)

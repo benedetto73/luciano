@@ -5,6 +5,7 @@ enum AppScreen: Hashable {
     case projectList
     case projectCreation
     case projectDetail(UUID)
+    case workspace(UUID)  // New workspace view
     case contentImport(UUID)
     case contentAnalysis(UUID)
     case slideGeneration(UUID)
@@ -107,7 +108,8 @@ class AppCoordinator: ObservableObject {
     }
     
     func showProjectDetail(id: UUID) {
-        push(.projectDetail(id))
+        print("🚀 AppCoordinator: Navigating to workspace for project \(id)")
+        push(.workspace(id))
     }
     
     func showContentImport(projectID: UUID) {

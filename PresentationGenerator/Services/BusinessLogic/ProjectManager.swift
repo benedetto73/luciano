@@ -163,6 +163,74 @@ class ProjectManager: ObservableObject {
         try await updateProject(updatedProject)
     }
     
+    /// Adds source file to project from URL
+    func addSourceFile(to project: Project, from url: URL) async throws {
+        // Read file content
+        let content: String
+        let fileExtension = url.pathExtension.lowercased()
+        
+        // Get file size
+        let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
+        let fileSize = (attributes[.size] as? Int64) ?? 0
+        
+        // Determine file type
+        let fileType: DocumentType
+        
+        switch fileExtension {
+        case "txt", "text":
+            content = try String(contentsOf: url, encoding: .utf8)
+            fileType = .txt
+        case "pdf":
+            // For now, basic PDF text extraction (could be enhanced)
+            if let pdfData = try? Data(contentsOf: url),
+               let pdfText = extractTextFromPDF(data: pdfData) {
+                content = pdfText
+            } else {
+                throw AppError.invalidFileFormat("Could not extract text from PDF")
+            }
+            fileType = .txt  // Treat as text for now
+        case "rtf":
+            if let rtfData = try? Data(contentsOf: url),
+               let attributedString = try? NSAttributedString(data: rtfData, options: [.documentType: NSAttributedString.DocumentType.rtf], documentAttributes: nil) {
+                content = attributedString.string
+            } else {
+                throw AppError.invalidFileFormat("Could not read RTF file")
+            }
+            fileType = .rtf
+        case "doc":
+            content = "[DOC file: \\(url.lastPathComponent) - conversion not yet implemented]"
+            fileType = .doc
+        case "docx":
+            content = "[DOCX file: \\(url.lastPathComponent) - conversion not yet implemented]"
+            fileType = .docx
+        case "jpg", "jpeg", "png":
+            // For images, just note the filename (could add OCR later)
+            content = "[Image: \\(url.lastPathComponent)]"
+            fileType = .txt  // Treat as text for now
+        default:
+            // Try as plain text
+            content = try String(contentsOf: url, encoding: .utf8)
+            fileType = .txt
+        }
+        
+        let sourceFile = SourceFile(
+            id: UUID(),
+            filename: url.lastPathComponent,
+            content: content,
+            fileSize: fileSize,
+            importedDate: Date(),
+            fileType: fileType
+        )
+        
+        try await addSourceFile(sourceFile, to: project)
+    }
+    
+    private func extractTextFromPDF(data: Data) -> String? {
+        // Basic PDF text extraction - in a real app, use PDFKit
+        // For now, return a placeholder
+        return "[PDF content - text extraction not yet implemented]"
+    }
+    
     /// Removes source file from project
     func removeSourceFile(_ sourceFile: SourceFile, from project: Project) async throws {
         var updatedProject = project
