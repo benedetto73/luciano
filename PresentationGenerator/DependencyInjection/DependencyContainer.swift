@@ -30,7 +30,6 @@ protocol PowerPointExporterProtocol {
 
 // MARK: - Placeholder Types
 
-class ProjectListViewModel {}
 class ContentAnalysisViewModel {}
 class SlideGenerationViewModel {}
 
@@ -131,8 +130,58 @@ class DependencyContainer: ObservableObject {
     // MARK: - ViewModels Factory Methods
     
     func makeProjectListViewModel() -> ProjectListViewModel {
-        // TODO: Implement in Phase 7 - Task 45
-        fatalError("ProjectListViewModel not yet implemented - Phase 7, Task 45")
+        ProjectListViewModel(
+            projectManager: projectManager,
+            appCoordinator: appCoordinator
+        )
+    }
+    
+    func makeProjectCreationViewModel() -> ProjectCreationViewModel {
+        ProjectCreationViewModel(
+            projectManager: projectManager,
+            appCoordinator: appCoordinator
+        )
+    }
+    
+    func makeProjectDetailViewModel(projectID: UUID) -> ProjectDetailViewModel {
+        ProjectDetailViewModel(
+            projectID: projectID,
+            projectManager: projectManager,
+            appCoordinator: appCoordinator,
+            fileRepository: fileRepository
+        )
+    }
+    
+    func makeContentImportViewModel(projectID: UUID) -> ContentImportViewModel {
+        ContentImportViewModel(
+            projectID: projectID,
+            projectManager: projectManager,
+            fileRepository: fileRepository,
+            appCoordinator: appCoordinator
+        )
+    }
+    
+    func makeSlideListViewModel(projectID: UUID) -> SlideListViewModel {
+        SlideListViewModel(
+            projectID: projectID,
+            projectManager: projectManager,
+            appCoordinator: appCoordinator
+        )
+    }
+    
+    func makeExportViewModel(projectID: UUID) -> ExportViewModel {
+        ExportViewModel(
+            projectID: projectID,
+            projectManager: projectManager,
+            appCoordinator: appCoordinator
+        )
+    }
+    
+    func makeSettingsViewModel() -> SettingsViewModel {
+        SettingsViewModel(
+            appCoordinator: appCoordinator,
+            keychainRepository: keychainRepository
+        )
     }
     
     func makeContentAnalysisViewModel(project: Project) -> ContentAnalysisViewModel {

@@ -26,7 +26,7 @@ struct RootView: View {
                 )
                 
             case .mainApp:
-                MainAppView(coordinator: coordinator)
+                MainAppView(coordinator: coordinator, dependencyContainer: dependencyContainer)
             }
         }
         .onAppear {
@@ -39,6 +39,12 @@ struct RootView: View {
 
 struct MainAppView: View {
     @ObservedObject var coordinator: AppCoordinator
+    let dependencyContainer: DependencyContainer
+    
+    init(coordinator: AppCoordinator, dependencyContainer: DependencyContainer) {
+        self.coordinator = coordinator
+        self.dependencyContainer = dependencyContainer
+    }
     
     var body: some View {
         NavigationStack(path: $coordinator.navigationPath) {
@@ -60,17 +66,37 @@ struct MainAppView: View {
         case .apiKeySetup:
             Text("API Key Setup - Should not appear here")
         case .projectList:
-            Text("Project List - To be implemented")
+            ProjectListView(
+                viewModel: dependencyContainer.makeProjectListViewModel()
+            )
         case .projectCreation:
-            Text("Project Creation - To be implemented")
-        case .fileImport:
-            Text("File Import - To be implemented")
+            ProjectCreationView(
+                viewModel: dependencyContainer.makeProjectCreationViewModel()
+            )
+        case .projectDetail(let projectID):
+            ProjectDetailView(
+                viewModel: dependencyContainer.makeProjectDetailViewModel(projectID: projectID)
+            )
+        case .contentImport(let projectID):
+            ContentImportView(
+                viewModel: dependencyContainer.makeContentImportViewModel(projectID: projectID)
+            )
         case .contentAnalysis:
             Text("Content Analysis - To be implemented")
         case .slideGeneration:
             Text("Slide Generation - To be implemented")
-        case .slideOverview:
-            Text("Slide Overview - To be implemented")
+        case .slideEditor(let projectID):
+            SlideListView(
+                viewModel: dependencyContainer.makeSlideListViewModel(projectID: projectID)
+            )
+        case .export(let projectID):
+            ExportView(
+                viewModel: dependencyContainer.makeExportViewModel(projectID: projectID)
+            )
+        case .settings:
+            SettingsView(
+                viewModel: dependencyContainer.makeSettingsViewModel()
+            )
         }
     }
 }

@@ -1,5 +1,19 @@
 import Foundation
 
+/// Application screens
+enum AppScreen: Hashable {
+    case projectList
+    case projectCreation
+    case projectDetail(UUID)
+    case contentImport(UUID)
+    case contentAnalysis(UUID)
+    case slideGeneration(UUID)
+    case slideEditor(UUID)
+    case export(UUID)
+    case settings
+    case apiKeySetup
+}
+
 @MainActor
 class AppCoordinator: ObservableObject {
     @Published var currentState: AppState = .splash
@@ -22,6 +36,8 @@ class AppCoordinator: ObservableObject {
         self.keychainRepository = keychainRepository
         self.dependencyContainer = dependencyContainer
     }
+    
+    // MARK: - App Lifecycle
     
     func start() {
         // Always show splash first
@@ -48,30 +64,64 @@ class AppCoordinator: ObservableObject {
         currentScreen = .projectList
     }
     
-    private func checkAPIKeyAndSetInitialScreen() {
-        // Deprecated - now using start() method
-        currentScreen = .apiKeySetup
+    // MARK: - Navigation
+    
+    func navigate(to screen: AppScreen) {
+        Logger.shared.debug("Navigating to: \(screen)", category: .app)
+        currentScreen = screen
     }
     
+    func push(_ screen: AppScreen) {
+        navigationPath.append(screen)
+        currentScreen = screen
+    }
+    
+    func pop() {
+        guard !navigationPath.isEmpty else { return }
+        navigationPath.removeLast()
+        currentScreen = navigationPath.last ?? .projectList
+    }
+    
+    func popToRoot() {
+        navigationPath.removeAll()
+        currentScreen = .projectList
+    }
+    
+    // MARK: - Screen Shortcuts
+    
     func showProjectList() {
-        // TODO: Implement navigation
+        navigate(to: .projectList)
     }
     
     func showProjectCreation() {
-        // TODO: Implement navigation
+        push(.projectCreation)
     }
     
-    func openProject(_ project: Project) {
-        // TODO: Implement navigation
+    func showProjectDetail(id: UUID) {
+        push(.projectDetail(id))
     }
-}
-
-enum AppScreen: Hashable {
-    case apiKeySetup
-    case projectList
-    case projectCreation
-    case fileImport(UUID)
-    case contentAnalysis(UUID)
-    case slideGeneration(UUID)
-    case slideOverview(UUID)
+    
+    func showContentImport(projectID: UUID) {
+        push(.contentImport(projectID))
+    }
+    
+    func showContentAnalysis(projectID: UUID) {
+        push(.contentAnalysis(projectID))
+    }
+    
+    func showSlideGeneration(projectID: UUID) {
+        push(.slideGeneration(projectID))
+    }
+    
+    func showSlideEditor(projectID: UUID) {
+        push(.slideEditor(projectID))
+    }
+    
+    func showExport(projectID: UUID) {
+        push(.export(projectID))
+    }
+    
+    func showSettings() {
+        push(.settings)
+    }
 }

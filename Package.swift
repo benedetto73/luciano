@@ -35,7 +35,7 @@ let package = Package(
         .testTarget(
             name: "PresentationGeneratorTests",
             dependencies: ["PresentationGenerator"],
-            path: "PresentationGeneratorTests"
+            path: "Tests/PresentationGeneratorTests"
         )
     ]
 )

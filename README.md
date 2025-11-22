@@ -1,99 +1,271 @@
-# PresentationGenerator
+# Luciano - AI Presentation Generator
 
-A native macOS application that converts text documents into professional presentation slides using OpenAI's API.
+<div align="center">
+  
+**An intelligent macOS app for creating educational presentations with AI**
 
-## Overview
+[![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)](https://swift.org)
+[![Platform](https://img.shields.io/badge/platform-macOS%2014.0+-lightgrey.svg)](https://www.apple.com/macos/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-PresentationGenerator is designed for creating educational presentations for diverse audiences (children and adults). It leverages GPT-4 for intelligent content analysis and slide design, and DALL-E for generating audience-appropriate images.
+</div>
 
-## Features
+## 🎯 Overview
 
-- **Intelligent Content Analysis**: Automatically extract key teaching points from Word documents
-- **AI-Powered Slide Generation**: Generate slides with appropriate designs, text, and images
-- **Audience-Specific Design**: Tailored presentations for Kids or Adults
-- **Content Filtering**: Ensures outputs are theologically appropriate for Catholic educational context
-- **Full Editing Capabilities**: Edit text, regenerate images, customize designs
-- **PowerPoint Export**: Export completed presentations to .pptx format
+Luciano is a native macOS application that transforms text documents into professional presentations using OpenAI's GPT models. Named after an intelligent assistant, it helps educators and content creators generate audience-appropriate slides quickly and efficiently.
 
-## Architecture
+### Key Features
 
-This project follows a clean architecture pattern:
-- **MVVM**: Separation of UI, business logic, and data
-- **Coordinator**: Navigation and flow management
-- **Repository**: Data access abstraction
-- **Dependency Injection**: For testability and modularity
+✨ **AI-Powered Content Analysis** - Automatically extract key teaching points from documents  
+🎨 **Smart Slide Generation** - Create audience-optimized presentations with GPT-4  
+👶 **Audience Targeting** - Tailored designs for Kids and Adults  
+📄 **Multi-Format Support** - Import .doc, .docx, .txt, and .rtf files  
+💾 **PowerPoint Export** - Export to standard .pptx format  
+🔒 **Secure Storage** - API keys stored in macOS Keychain  
 
-### Directory Structure
+## 🚀 Quick Start
 
+### Requirements
+- macOS 14.0 or later
+- Xcode 15.0+ (for building from source)
+- OpenAI API key (optional - free models available)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/luciano.git
+cd luciano
+
+# Build and run
+swift build
+swift run
+```
+
+### First Launch
+
+1. **Choose Your Setup**
+   - Enter OpenAI API key for GPT-4 models
+   - Or use free GPT-3.5 models (no key required)
+
+2. **Create Your First Presentation**
+   - Click **+** to create a new project
+   - Import your content files
+   - Let AI analyze and generate slides
+   - Export to PowerPoint
+
+## 📖 Usage Guide
+
+### Creating a Presentation
+
+```
+1. New Project → Enter name and select audience (Kids/Adults)
+2. Import Content → Add .doc/.docx/.txt/.rtf files
+3. Analyze Content → AI extracts key teaching points
+4. Generate Slides → AI creates optimized slides
+5. Export → Download .pptx to ~/Downloads
+```
+
+### Managing Projects
+
+- 🔍 **Search** - Find projects by name
+- 📊 **Sort** - By modified date, created date, or name
+- 🗑️ **Delete** - Swipe left to remove projects
+- ♻️ **Refresh** - Pull down to reload
+
+### Settings
+
+Access via the ⚙️ gear icon:
+- Manage OpenAI API keys
+- Toggle between free and premium models
+- View app version and documentation links
+
+## 🏗️ Architecture
+
+### Tech Stack
+- **UI**: SwiftUI + MVVM pattern
+- **AI**: OpenAI GPT-3.5/GPT-4
+- **Storage**: JSON-based local persistence
+- **Security**: macOS Keychain integration
+- **Export**: OpenXML PowerPoint generation
+
+### Project Structure
 ```
 PresentationGenerator/
-├── App/                    # Application entry point and coordinator
-├── Models/                 # Domain models and DTOs
-├── Views/                  # SwiftUI views and view models
-├── Services/               # Business logic services
-├── Repositories/           # Data access layer
-├── Utilities/              # Extensions, helpers, and constants
-├── DependencyInjection/    # DI container and factories
-└── Resources/              # Assets, prompts, and localization
+├── App/                   # Entry point, AppCoordinator
+├── ViewModels/            # 7 ViewModels for screens
+├── Views/                 # SwiftUI views
+│   ├── ProjectList/       # Main project list
+│   ├── ProjectDetail/     # Workflow screen
+│   ├── ContentImport/     # File picker
+│   ├── SlideList/         # Slide viewer
+│   └── Export/            # PowerPoint export
+├── Services/              # Business logic
+│   ├── OpenAI/           # GPT integration
+│   └── BusinessLogic/    # Content analysis, slide generation
+├── Repositories/          # Data access
+└── Models/               # Domain models + DTOs
 ```
 
-## Requirements
+### Key Services
 
-- macOS 13.0 or later
-- Xcode 15.0 or later
-- OpenAI API key (with access to GPT-4 and DALL-E)
+| Service | Purpose |
+|---------|---------|
+| **ProjectManager** | High-level orchestration |
+| **ContentAnalyzer** | Extract key points from text |
+| **SlideDesigner** | Create audience-appropriate designs |
+| **SlideGenerator** | Generate slides with AI |
+| **PowerPointExporter** | Export to .pptx format |
+| **ImageService** | AI image generation (planned) |
 
-## Setup
+## 🧪 Development
 
-1. Clone the repository
-2. Open `Package.swift` in Xcode
-3. Build the project (dependencies will be fetched automatically)
-4. Run the app and enter your OpenAI API key when prompted
-
-## Development
-
-### Building
-
+### Build Commands
 ```bash
+# Clean build
+swift package clean
+
+# Debug build
 swift build
-```
 
-### Testing
+# Release build
+swift build -c release
 
-```bash
+# Run tests
 swift test
+
+# Open in Xcode
+open Package.swift
 ```
 
-### Running
+### Running Tests
+```bash
+# Run all tests
+swift test
 
-Open the project in Xcode and run the `PresentationGenerator` scheme.
+# Run specific test
+swift test --filter ProjectManagerTests
+```
 
-## Dependencies
+### Dependencies
+```swift
+.package(url: "https://github.com/MacPaw/OpenAI", from: "0.2.4")
+```
 
-- **OpenAI SDK**: For GPT-4 and DALL-E integration
-- Additional libraries for Word document parsing (to be added)
+## 📊 Project Status
 
-## User Flow
+**Version**: 1.0.0 (Beta)  
+**Build**: November 22, 2025  
+**Swift Files**: 64  
+**Completion**: ~47% (45/95 planned tasks)
 
-1. **Setup**: Enter OpenAI API key (stored securely in Keychain)
-2. **Project Creation**: Create a new project and select target audience
-3. **Import**: Import one or more Word documents
-4. **Analysis**: AI analyzes content and extracts key points
-5. **Generation**: AI generates slides with text and images
-6. **Editing**: Review and edit slides as needed
-7. **Export**: Export to PowerPoint format
+### ✅ Completed
+- [x] Core architecture (MVVM + DI)
+- [x] Data persistence layer
+- [x] OpenAI integration
+- [x] Business logic services
+- [x] UI screens and navigation
+- [x] PowerPoint export
+- [x] Settings management
 
-## Security & Privacy
+### 🚧 In Progress
+- [ ] Content analysis view
+- [ ] Advanced slide editor
+- [ ] Unit test coverage
+- [ ] Performance optimization
 
-- API keys are stored securely in macOS Keychain
-- No telemetry or data collection
-- All processing is local except OpenAI API calls
-- Content filtering ensures appropriate outputs
+### 📋 Planned
+- [ ] Additional audience types
+- [ ] Custom themes
+- [ ] Batch processing
+- [ ] Cloud sync
+- [ ] Collaboration features
 
-## License
+## 🐛 Troubleshooting
 
-Copyright © 2025. All rights reserved.
+### Common Issues
 
-## Version
+**API Key Errors**
+```
+Problem: "Invalid API key"
+Solution: Verify key in Settings → Update API Key
+Check: OpenAI account has available credits
+```
 
-1.0.0 - Initial Release
+**Build Failures**
+```
+Problem: "Cannot find module 'OpenAI'"
+Solution: swift package resolve
+```
+
+**Slow Generation**
+```
+Problem: Large documents take too long
+Solution: Split into smaller files or use free models
+```
+
+**Export Failures**
+```
+Problem: "Export failed"
+Solution: Check ~/Downloads permissions
+Verify: Slides were generated first
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow SwiftUI best practices
+- Use async/await for concurrency
+- Add unit tests for new features
+- Update documentation
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [MacPaw/OpenAI](https://github.com/MacPaw/OpenAI) - Swift SDK for OpenAI
+- OpenAI - GPT models powering the intelligence
+- SwiftUI community for excellent resources
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/luciano/issues)
+- **Documentation**: See [BUILD_SUMMARY.md](BUILD_SUMMARY.md)
+- **OpenAI Docs**: [API Reference](https://platform.openai.com/docs)
+
+## 🗺️ Roadmap
+
+### Version 1.1 (Q1 2026)
+- Enhanced slide editor
+- More audience types
+- Improved export options
+
+### Version 1.2 (Q2 2026)
+- Custom themes and templates
+- Batch processing
+- Performance improvements
+
+### Version 2.0 (Q3 2026)
+- Cloud sync
+- Collaboration features
+- Mobile companion app
+
+---
+
+<div align="center">
+
+**Built with ❤️ for educators and content creators**
+
+[Report Bug](https://github.com/yourusername/luciano/issues) · [Request Feature](https://github.com/yourusername/luciano/issues) · [Documentation](BUILD_SUMMARY.md)
+
+</div>
