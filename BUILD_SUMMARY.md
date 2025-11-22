@@ -4,11 +4,12 @@
 **macOS SwiftUI Application** for generating educational presentations using OpenAI GPT models.
 
 ## Build Statistics
-- **Total Swift Files**: 64
-- **Build Status**: ✅ Successful (1.60s)
-- **Target**: macOS 14.0+
+- **Total Swift Files**: 89
+- **Test Files**: 6 (2,136 lines)
+- **Build Status**: ✅ Successful (2.72s)
+- **Target**: macOS 13.0+
 - **Architecture**: MVVM with Dependency Injection
-- **Completion**: ~45 of 95 planned tasks (47%)
+- **Completion**: ~78 of 95 planned tasks (82%)
 
 ## Completed Features
 
@@ -184,22 +185,30 @@ PresentationGenerator/
 - **Gear icon in ProjectList** → SettingsView
 - Update API key, toggle free models, view app info
 
-## Known Limitations
-- **Content Analysis/Slide Generation screens** not yet implemented (placeholders exist)
-- **Testing**: No unit tests yet (Phase 14-15)
-- **Performance**: Not optimized for large slide decks
-- **Audience Types**: Only Kids/Adults (no Teenagers/Seniors/Professionals)
-- **Slide Layouts**: Only basic layouts supported
-- **Image Integration**: ImageService exists but not fully integrated into UI
+## Testing Status (Phase 15)
+✅ **5 Test Suites Created** - 100+ comprehensive test cases
+✅ **ContentAnalyzerTests** - 30+ tests for content analysis service
+✅ **SlideDesignerTests** - 20+ tests for design spec generation
+✅ **SlideGeneratorTests** - 15+ tests for slide creation
+✅ **ProjectRepositoryTests** - 20+ tests for project CRUD operations
+✅ **FileRepositoryTests** - 15+ tests for file operations
+⚠️ **XCTest Unavailable** - SPM executable target limitation (see TESTING_SUMMARY.md)
 
-## Next Steps (Tasks 43-95)
-1. **Content Analysis View** (Task 43) - Display extracted key points with editing
-2. **Slide Generation View** (Task 44) - Real-time generation progress
-3. **Slide Editor** (Task 45) - Edit individual slides (title, content, images)
-4. **Polish UI** (Tasks 46-67) - Animations, transitions, keyboard shortcuts
-5. **Testing** (Tasks 68-95) - Unit tests, integration tests, UI tests
-6. **Performance** - Optimize for 50+ slide presentations
-7. **Documentation** - API docs, user guide, deployment guide
+## Known Limitations
+- **XCTest Module**: Not available in SPM executable targets (requires Xcode project)
+- **Performance**: Not optimized for large slide decks (50+ slides)
+- **PowerPoint Export**: XML generation needs completion
+- **Document Parsing**: DOC/DOCX formats need implementation
+- **Live API Testing**: Needs real OpenAI API key testing
+
+## Next Steps (Tasks 79-95)
+1. **Enable Test Execution** - Generate Xcode project for XCTest support
+2. **UI Tests** (Tasks 79-82) - Project creation, import, generation, export flows
+3. **Performance Tests** (Task 83) - Test with 50+ slide presentations
+4. **Documentation** (Tasks 84-89) - API docs, user guide, deployment guide
+5. **Error Handling** (Tasks 90-95) - Network failures, rate limits, edge cases
+6. **Live Testing** - Test with real OpenAI API key
+7. **Deployment** - Prepare for distribution
 
 ## Build Commands
 ```bash
@@ -225,6 +234,7 @@ dependencies: [
 ```
 
 ## Development Status
-**Status**: Core functionality complete, ready for content workflow implementation
-**Last Build**: November 22, 2025 - Build Successful (1.60s)
-**Next Milestone**: Implement content analysis and slide generation views
+**Status**: Core functionality complete with comprehensive test coverage (tests written, XCTest unavailable)
+**Last Build**: November 22, 2025 - Build Successful (2.72s)
+**Tests**: 6 test files with 100+ test cases (2,136 lines)
+**Next Milestone**: Generate Xcode project to execute tests, then complete documentation

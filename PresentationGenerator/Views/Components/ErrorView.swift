@@ -34,6 +34,7 @@ struct ErrorView: View {
             Image(systemName: icon)
                 .font(.system(size: 48))
                 .foregroundColor(.red)
+                .accessibilityHidden(true)
             
             // Title
             Text(title)
@@ -54,6 +55,7 @@ struct ErrorView: View {
                         dismissAction()
                     }
                     .keyboardShortcut(.cancelAction)
+                    .accessibilityLabel("Dismiss error")
                 }
                 
                 if let retryAction = retryAction {
@@ -62,6 +64,7 @@ struct ErrorView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.defaultAction)
+                    .accessibilityLabel("Retry action")
                 }
             }
         }
@@ -72,6 +75,8 @@ struct ErrorView: View {
                 .fill(Color(NSColor.windowBackgroundColor))
                 .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 4)
         )
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(title): \(message)")
     }
 }
 

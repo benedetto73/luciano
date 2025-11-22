@@ -24,6 +24,7 @@ struct LoadingView: View {
             ProgressView()
                 .scaleEffect(1.5)
                 .progressViewStyle(CircularProgressViewStyle())
+                .accessibilityLabel("Loading")
             
             Text(message)
                 .font(.headline)
@@ -40,6 +41,8 @@ struct LoadingView: View {
                 }
             }
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(message)
     }
 }
 

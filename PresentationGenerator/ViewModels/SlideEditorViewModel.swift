@@ -11,6 +11,8 @@ import Foundation
 class SlideEditorViewModel: ObservableObject {
     private let projectManager: ProjectManager
     private let appCoordinator: AppCoordinator
+    private let autoSaveManager = AutoSaveManager(debounceInterval: 2.0)
+    private var isInitialLoad = true
     let projectID: UUID
     let slideID: UUID
     
@@ -22,9 +24,27 @@ class SlideEditorViewModel: ObservableObject {
     @Published var successMessage: String?
     
     // Editable properties
-    @Published var title: String = ""
-    @Published var content: String = ""
-    @Published var notes: String = ""
+    @Published var title: String = "" {
+        didSet {
+            guard !isInitialLoad else { return }
+            hasUnsavedChanges = true
+            autoSaveManager.scheduleSave()
+        }
+    }
+    @Published var content: String = "" {
+        didSet {
+            guard !isInitialLoad else { return }
+            hasUnsavedChanges = true
+            autoSaveManager.scheduleSave()
+        }
+    }
+    @Published var notes: String = "" {
+        didSet {
+            guard !isInitialLoad else { return }
+            hasUnsavedChanges = true
+            autoSaveManager.scheduleSave()
+        }
+    }
     @Published var hasUnsavedChanges = false
     
     // Design options
@@ -45,6 +65,11 @@ class SlideEditorViewModel: ObservableObject {
         self.slideID = slideID
         self.projectManager = projectManager
         self.appCoordinator = appCoordinator
+        
+        // Configure auto-save action
+        autoSaveManager.saveAction = { [weak self] in
+            await self?.saveChanges()
+        }
     }
     
     // MARK: - Lifecycle
@@ -70,6 +95,7 @@ class SlideEditorViewModel: ObservableObject {
             hasImage = foundSlide.imageData != nil
             
             hasUnsavedChanges = false
+            isInitialLoad = false
         } catch {
             errorMessage = error.localizedDescription
         }
