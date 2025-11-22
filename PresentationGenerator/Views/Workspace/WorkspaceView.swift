@@ -99,6 +99,7 @@ struct WorkspaceView: View {
                 return nil
             case "e": viewModel.selectedPhase = .exportPhase; return nil
             case "/": showShortcutsOverlay.toggle(); return nil
+            case ",": viewModel.appCoordinator.showSettings(); return nil
             default: return event
             }
         }

@@ -17,6 +17,7 @@ class SettingsViewModel: ObservableObject {
     @Published var hasChanges: Bool = false
     @Published var errorMessage: String?
     @Published var successMessage: String?
+    @Published var isValidating: Bool = false
     
     init(
         appCoordinator: AppCoordinator,
@@ -46,9 +47,25 @@ class SettingsViewModel: ObservableObject {
             return
         }
         
+        // Validate format
+        guard newKey.hasPrefix("sk-") else {
+            errorMessage = "Invalid API key format. OpenAI keys start with 'sk-'"
+            return
+        }
+        
+        // Test the key with OpenAI
         do {
+            let testService = OpenAIService(apiKey: newKey)
+            let isValid = try await testService.validateAPIKey()
+            
+            guard isValid else {
+                errorMessage = "API key validation failed. Please check your key and try again."
+                return
+            }
+            
+            // Save to keychain if valid
             try keychainRepository.save(apiKey: newKey)
-            successMessage = "API key updated successfully"
+            successMessage = "API key validated and saved successfully"
             hasChanges = false
             
             // Reload settings to show masked key
@@ -58,7 +75,7 @@ class SettingsViewModel: ObservableObject {
             }
             
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = "Failed to validate API key: \(error.localizedDescription)"
         }
     }
     

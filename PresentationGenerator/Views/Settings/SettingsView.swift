@@ -122,11 +122,16 @@ struct SettingsView: View {
         .sheet(isPresented: $showingAPIKeyInput) {
             APIKeyInputSheet(
                 apiKey: $newAPIKey,
+                viewModel: viewModel,
                 onSave: {
                     Task {
+                        viewModel.isValidating = true
                         await viewModel.updateAPIKey(newAPIKey)
-                        showingAPIKeyInput = false
-                        newAPIKey = ""
+                        viewModel.isValidating = false
+                        if viewModel.errorMessage == nil {
+                            showingAPIKeyInput = false
+                            newAPIKey = ""
+                        }
                     }
                 },
                 onCancel: {
@@ -168,6 +173,7 @@ struct SettingsView: View {
 
 struct APIKeyInputSheet: View {
     @Binding var apiKey: String
+    @ObservedObject var viewModel: SettingsViewModel
     let onSave: () -> Void
     let onCancel: () -> Void
     
@@ -177,7 +183,7 @@ struct APIKeyInputSheet: View {
                 .font(.title2)
                 .fontWeight(.semibold)
             
-            Text("Your API key is stored securely in the system keychain")
+            Text("Your API key will be validated with OpenAI and stored securely")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -186,18 +192,30 @@ struct APIKeyInputSheet: View {
                 .textFieldStyle(.roundedBorder)
                 .font(.system(.body, design: .monospaced))
                 .padding(.horizontal)
+                .disabled(viewModel.isValidating)
+            
+            if viewModel.isValidating {
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                    Text("Validating API key...")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
             
             HStack(spacing: 12) {
                 Button("Cancel") {
                     onCancel()
                 }
                 .buttonStyle(.bordered)
+                .disabled(viewModel.isValidating)
                 
                 Button("Save") {
                     onSave()
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(apiKey.isEmpty)
+                .disabled(apiKey.isEmpty || viewModel.isValidating)
             }
         }
         .padding()

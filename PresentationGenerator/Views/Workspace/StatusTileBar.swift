@@ -93,6 +93,9 @@ struct StatusTileBar: View {
                         .foregroundColor(.secondary)
                 }
             }
+            
+            // Settings button
+            SettingsButton(viewModel: viewModel)
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 12)
@@ -207,5 +210,66 @@ extension Date {
         }
         
         return "Just now"
+    }
+}
+
+// MARK: - Settings Button
+
+struct SettingsButton: View {
+    @ObservedObject var viewModel: ProjectDetailViewModel
+    @State private var isHovered = false
+    @State private var hasAPIKey = false
+    
+    private var isUsingFreeModels: Bool {
+        UserDefaults.standard.bool(forKey: "useFreeModels")
+    }
+    
+    private var showWarning: Bool {
+        !hasAPIKey && !isUsingFreeModels
+    }
+    
+    var body: some View {
+        Button {
+            viewModel.appCoordinator.showSettings()
+        } label: {
+            ZStack(alignment: .topTrailing) {
+                Image(systemName: "gearshape.fill")
+                    .font(.system(size: 20))
+                    .foregroundColor(isHovered ? .accentColor : .secondary)
+                    .frame(width: 36, height: 36)
+                    .background(
+                        Circle()
+                            .fill(isHovered ? Color.accentColor.opacity(0.1) : Color.clear)
+                    )
+                
+                if showWarning {
+                    Circle()
+                        .fill(Color.orange)
+                        .frame(width: 10, height: 10)
+                        .overlay(
+                            Circle()
+                                .stroke(Color(nsColor: .windowBackgroundColor), lineWidth: 2)
+                        )
+                        .offset(x: 2, y: -2)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .help("Settings (⌘,)")
+        .onHover { hovering in
+            isHovered = hovering
+        }
+        .onAppear {
+            checkAPIKey()
+        }
+    }
+    
+    private func checkAPIKey() {
+        let repository = KeychainRepository()
+        if let key = try? repository.retrieve() {
+            hasAPIKey = !key.isEmpty
+        } else {
+            hasAPIKey = false
+        }
     }
 }
